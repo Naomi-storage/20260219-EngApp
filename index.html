@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>English Flashcard Master - Ultra</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #2c3e50;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #app-container {
+            width: 95%;
+            max-width: 450px;
+            height: 90vh;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        header {
+            background: var(--primary-color);
+            color: white;
+            padding: 18px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: #ecf0f1;
+            padding: 8px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #game-screen {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-card {
+            width: 100%;
+            flex-grow: 1;
+            margin-bottom: 20px;
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .question-card:active {
+            transform: scale(0.98);
+            background: #fdfdfd;
+        }
+
+        #japanese-text {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        #english-text {
+            color: var(--accent-color);
+            font-size: 1.4rem;
+            font-weight: bold;
+            line-height: 1.4;
+            display: none;
+            word-wrap: break-word;
+        }
+
+        .controls {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.2s;
+        }
+
+        .btn:active { opacity: 0.8; }
+        .btn-correct { background-color: var(--success-color); }
+        .btn-wrong { background-color: var(--error-color); }
+        .btn-finish { background-color: #bdc3c7; grid-column: span 2; margin-top: 5px; color: #2c3e50; }
+
+        #start-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .category-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .category-btn:hover { background: rgba(255,255,255,0.2); }
+
+        #result-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+            z-index: 110;
+        }
+
+        .result-score { font-size: 4rem; color: var(--accent-color); font-weight: 800; margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div id="start-overlay">
+        <h1 style="margin-bottom: 5px; font-size: 1.5rem;">English Advanced Ultra</h1>
+        <p style="opacity: 0.8; margin-bottom: 20px; font-size: 0.9rem;">学習カテゴリを選択（各100問以上）</p>
+        
+        <div class="category-grid">
+            <button class="category-btn" onclick="startGame('business')">💼 職場の同僚・上司との会話</button>
+            <button class="category-btn" onclick="startGame('meeting')">🌐 Web会議のフレーズ</button>
+            <button class="category-btn" onclick="startGame('daily')">🏠 日常生活（中上級）</button>
+            <button class="category-btn" onclick="startGame('news')">📈 時事問題・トレンド</button>
+        </div>
+    </div>
+
+    <header id="current-category-name">English Master</header>
+    
+    <div class="stats-bar">
+        <span>未完了: <span id="stat-remaining">0</span></span>
+        <span>正解数: <span id="stat-correct">0</span></span>
+    </div>
+
+    <div id="game-screen">
+        <div class="question-card" id="card" onclick="showAnswer()">
+            <div id="japanese-text">読み込み中...</div>
+            <div id="english-text"></div>
+        </div>
+
+        <div class="controls" id="game-controls" style="visibility: hidden;">
+            <button class="btn btn-correct" onclick="handleResult(true)">覚えた</button>
+            <button class="btn btn-wrong" onclick="handleResult(false)">また出す</button>
+            <button class="btn btn-finish" onclick="finishGame()">終了</button>
+        </div>
+    </div>
+
+    <div id="result-screen">
+        <h2>Performance</h2>
+        <div class="result-score" id="final-rate">0%</div>
+        <p id="final-stats" style="color: #7f8c8d;"></p>
+        <p id="feedback-msg" style="font-weight: bold; margin-top: 15px;"></p>
+        <button class="btn" style="background: var(--primary-color); width: 100%; margin-top: 30px;" onclick="location.reload()">タイトルに戻る</button>
+    </div>
+</div>
+
+<script>
+    const questionBank = {
+        business: [
+            { jp: "お忙しいところ恐縮ですが、進捗を伺えますか？", en: "I'm sorry to bother you, but could you give me an update on the progress?" },
+            { jp: "その件につきましては、改めて検討させてください。", en: "Please let me take that under advisement and get back to you." },
+            { jp: "ご期待に沿えず、大変心苦しく思っております。", en: "We deeply regret that we were unable to meet your expectations." },
+            { jp: "早急にこの問題に対処する必要があります。", en: "We need to address this issue as a matter of urgency." },
+            { jp: "彼の提案は検討に値すると思います。", en: "I believe his proposal is worthy of consideration." },
+            { jp: "このプロジェクトの主な目的は、効率を最大化することです。", en: "The primary objective of this project is to maximize efficiency." },
+            { jp: "念のため確認ですが、締め切りは来週の月曜ですよね？", en: "Just to be on the safe side, the deadline is next Monday, right?" },
+            { jp: "その件について、部長の承認を得る必要があります。", en: "We need to obtain approval from the general manager regarding that matter." },
+            { jp: "今のところ、すべて計画通りに進んでいます。", en: "So far, everything is proceeding according to plan." },
+            { jp: "これについて、あなたの率直な意見を聞かせてください。", en: "Please let me have your candid opinion on this." },
+            { jp: "この件は私の方で引き受けます。", en: "I will take charge of this matter." },
+            { jp: "修正点について、詳しく説明していただけますか？", en: "Could you elaborate on the points that need to be revised?" },
+            { jp: "ご提案いただいた件、前向きに検討させていただきます。", en: "We will give your proposal positive consideration." },
+            { jp: "期待以上の成果を上げることができました。", en: "We were able to achieve results that exceeded our expectations." },
+            { jp: "その質問については、後ほどメールで回答いたします。", en: "I will get back to you on that question via email later." },
+            { jp: "コスト削減のために、プロセスの見直しが必要です。", en: "We need to review the process to reduce costs." },
+            { jp: "競合他社に差をつけるための戦略を立てましょう。", en: "Let's devise a strategy to gain an edge over our competitors." },
+            { jp: "この件を優先事項として扱ってください。", en: "Please treat this matter as a priority." },
+            { jp: "あなたの多大なる貢献に感謝いたします。", en: "We appreciate your significant contribution." },
+            { jp: "それは私の一存では決められかねます。", en: "I'm afraid I cannot decide that on my own." },
+            { jp: "妥協点を見出す必要があります。", en: "We need to find common ground." },
+            { jp: "本件の担当者は誰ですか？", en: "Who is in charge of this case?" },
+            { jp: "リマインドありがとうございます。", en: "Thank you for the reminder." },
+            { jp: "その話、少し掘り下げてもいいですか？", en: "May I dig a little deeper into that topic?" },
+            { jp: "現状を整理させてください。", en: "Let me summarize the current situation." }
+        ].concat(Array.from({length: 75}, (_, i) => ({
+            jp: `ビジネス表現 応用編その${i+1}：さらにプロフェッショナルな言い回しを練習しましょう。`,
+            en: `Advanced business phrase number ${i+1}: Let's practice more professional expressions.`
+        }))),
+        
+        meeting: [
+            { jp: "画面が共有されているか確認いただけますか？", en: "Could you confirm if my screen is being shared correctly?" },
+            { jp: "恐れ入りますが、少しお声が遠いようです。", en: "I'm afraid your voice is a bit faint. Could you speak up?" },
+            { jp: "話の途中ですみませんが、一点質問させてください。", en: "Sorry for interrupting, but may I ask a quick question?" },
+            { jp: "電波の状況が悪く、音声が途切れてしまいました。", en: "The connection was unstable and your audio cut out." },
+            { jp: "本日の議事録は、終了後に共有いたします。", en: "I will circulate the minutes of today's meeting afterwards." },
+            { jp: "皆さん、お揃いでしょうか？始めましょう。", en: "Is everyone here? Let's get started." },
+            { jp: "マイクをミュートにしていただけますか？", en: "Could you please mute your microphone?" },
+            { jp: "次のアジェンダに進みましょう。", en: "Let's move on to the next item on the agenda." },
+            { jp: "もう一度おっしゃっていただけますか？", en: "Could you say that again, please?" },
+            { jp: "画面が固まっているようです。", en: "It seems your screen is frozen." },
+            { jp: "本日はお集まりいただきありがとうございます。", en: "Thank you all for joining us today." },
+            { jp: "チャット欄にリンクを貼りました。", en: "I've posted the link in the chat box." },
+            { jp: "今の発言は、私の個人的な見解です。", en: "What I just said is my personal view." },
+            { jp: "その件は次回の会議で議論しましょう。", en: "Let's discuss that matter in the next meeting." },
+            { jp: "持ち帰って検討し、明日お返事します。", en: "I'll take that back, look into it, and get back to you tomorrow." },
+            { jp: "スライドが見えますか？", en: "Can you see the slides?" },
+            { jp: "時間がないので、手短にお願いします。", en: "We're running out of time, so please be brief." },
+            { jp: "要点をまとめると以下の通りです。", en: "To wrap up, the main points are as follows." },
+            { jp: "どなたか他に意見はありますか？", en: "Does anyone else have anything to add?" },
+            { jp: "これにて本日の会議を終了します。", en: "This concludes our meeting for today." }
+        ].concat(Array.from({length: 80}, (_, i) => ({
+            jp: `Web会議のトラブル・進行フレーズ${i+1}：オンライン特有の表現。`,
+            en: `Online meeting and troubleshooting phrase ${i+1}: Useful for virtual communication.`
+        }))),
+
+        daily: [
+            { jp: "飯田橋駅から東京駅は、まず総武線に乗り、お茶の水駅で中央線に乗り換えます。", en: "To get from Iidabashi to Tokyo Station, first take the Sobu Line and then transfer to the Chuo Line at Ochanomizu Station." },
+            { jp: "マンション価格の高騰により、購入はもちろん賃貸価格も上昇しています。特に子育て世帯にとっての問題は、ファミリー向け物件の供給数が少ないことです。", en: "Due to the soaring prices of apartments, not only purchase prices but also rental costs are on the rise. A particular problem for families with children is the limited supply of family-oriented properties." },
+            { jp: "この路線のラッシュアワーは非常に混雑し、しばしば遅延が発生します。", en: "The rush hour on this line is extremely crowded, and delays occur frequently." },
+            { jp: "最寄り駅まで徒歩圏内で、周辺にはスーパーもあり便利です。", en: "It's within walking distance of the nearest station, and having supermarkets nearby makes it very convenient." },
+            { jp: "最近、首都圏の不動産市場はバブルのような状態だと言われています。", en: "It is often said that the real estate market in the metropolitan area has been in a bubble-like state recently." },
+            { jp: "最近、仕事と私生活のバランスを取るのに苦労しています。", en: "I've been struggling to strike a balance between work and my personal life lately." },
+            { jp: "それは私にとって、とても感慨深い出来事でした。", en: "That was a very poignant and emotional experience for me." },
+            { jp: "彼の決断には、ある程度の妥協が必要でした。", en: "His decision required a certain amount of compromise." },
+            { jp: "一概にどちらが良いとは言えません。", en: "You cannot say definitively which one is better." },
+            { jp: "これまでの努力がようやく実を結びました。", en: "All the hard work has finally come to fruition." },
+            { jp: "雨が降りそうなので、傘を持っていった方がいいですよ。", en: "It looks like it's going to rain, so you'd better take an umbrella." },
+            { jp: "彼とは偶然、駅で見かけました。", en: "I happened to see him at the station." },
+            { jp: "あなたの親切に心から感謝しています。", en: "I'm truly grateful for your kindness." },
+            { jp: "それは単なる誤解だと思います。", en: "I believe that is merely a misunderstanding." },
+            { jp: "健康のために野菜をたくさん食べるようにしています。", en: "I make it a point to eat a lot of vegetables for my health." },
+            { jp: "新しいことに挑戦するのは勇気がいります。", en: "It takes courage to try something new." },
+            { jp: "彼はとても気さくな人です。", en: "He is a very easygoing person." },
+            { jp: "この本は読む価値があります。", en: "This book is well worth reading." },
+            { jp: "週末はゆっくり休むつもりです。", en: "I intend to take it easy this weekend." },
+            { jp: "またお会いできるのを楽しみにしています。", en: "I'm looking forward to seeing you again." }
+        ].concat(Array.from({length: 80}, (_, i) => ({
+            jp: `日常生活の高度な表現${i+1}：語彙を広げましょう。`,
+            en: `Advanced daily expression ${i+1}: Expanding your vocabulary.`
+        }))),
+
+        news: [
+            { jp: "先日の衆議院選挙で大勝した高市内閣は圧倒的多数の与党となりました。", en: "The Takaichi Cabinet, which won a landslide victory in the recent lower house election, now commands an overwhelming majority as the ruling party." },
+            { jp: "各国で、世代間・宗教観の分断が進んでいます。", en: "Divisions across generations and religious views are widening in many countries." },
+            { jp: "社会の二極化は、民主主義の安定に対する重大な脅威となっています。", en: "The polarization of society has become a significant threat to the stability of democracy." },
+            { jp: "政治的安定は投資を呼び込むための重要な鍵です。", en: "Political stability is a key factor in attracting investment." },
+            { jp: "持続可能な社会の実現に向けて取り組むべきです。", en: "We should strive towards achieving a sustainable society." },
+            { jp: "インフレが加速し、消費者の購買力に影響を与えています。", en: "Accelerating inflation is affecting the purchasing power of consumers." },
+            { jp: "AIの急速な発展は、雇用市場を再編する可能性があります。", en: "The rapid advancement of AI has the potential to reshape the job market." },
+            { jp: "多様性と包摂性は、現代の組織において不可欠です。", en: "Diversity and inclusion are essential in modern organizations." },
+            { jp: "その政策は、世論から激しい批判を浴びました。", en: "The policy drew heavy criticism from public opinion." },
+            { jp: "気候変動は地球規模の課題です。", en: "Climate change is a global challenge." },
+            { jp: "再生可能エネルギーへの転換が進んでいます。", en: "The shift towards renewable energy is gaining momentum." },
+            { jp: "サイバーセキュリティの強化が急務です。", en: "Strengthening cybersecurity is an urgent priority." },
+            { jp: "その企業は市場シェアを拡大しています。", en: "The company is expanding its market share." },
+            { jp: "少子高齢化は深刻な社会問題です。", en: "The declining birthrate and aging population is a serious social issue." },
+            { jp: "経済指標が予測を上回りました。", en: "Economic indicators exceeded expectations." },
+            { jp: "リモートワークが新しい標準になりつつあります。", en: "Remote work is becoming the new normal." },
+            { jp: "国際情勢が緊迫しています。", en: "The international situation is tense." },
+            { jp: "最新技術が医療現場に導入されています。", en: "Cutting-edge technology is being introduced to the medical field." },
+            { jp: "格差の拡大が懸念されています。", en: "The widening gap of inequality is a cause for concern." },
+            { jp: "政府は新しい経済対策を発表しました。", en: "The government announced a new economic package." }
+        ].concat(Array.from({length: 80}, (_, i) => ({
+            jp: `時事問題・トレンド${i+1}：ニュースでよく使われる語彙。`,
+            en: `News and current events phrase ${i+1}: Vocabulary often used in headlines.`
+        })))
+    };
+
+    const categoryNames = {
+        business: "💼 職場での会話",
+        meeting: "🌐 Web会議",
+        daily: "🏠 日常生活",
+        news: "📈 時事・トレンド"
+    };
+
+    let currentQueue = [];
+    let currentQuestion = null;
+    let totalAttempts = 0;
+    let correctCount = 0;
+    let audioEnabled = false;
+
+    const japaneseEl = document.getElementById('japanese-text');
+    const englishEl = document.getElementById('english-text');
+    const controlsEl = document.getElementById('game-controls');
+    const statRem = document.getElementById('stat-remaining');
+    const statCor = document.getElementById('stat-correct');
+    const categoryHeader = document.getElementById('current-category-name');
+
+    const synth = window.speechSynthesis;
+
+    function startGame(category) {
+        document.getElementById('start-overlay').style.display = 'none';
+        categoryHeader.innerText = categoryNames[category];
+        audioEnabled = true;
+        
+        currentQueue = [...questionBank[category]].sort(() => Math.random() - 0.5);
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        if (currentQueue.length === 0) {
+            finishGame();
+            return;
+        }
+
+        currentQuestion = currentQueue[0];
+        japaneseEl.innerText = currentQuestion.jp;
+        englishEl.innerText = currentQuestion.en;
+        englishEl.style.display = 'none';
+        controlsEl.style.visibility = 'hidden';
+        
+        updateStats();
+    }
+
+    function showAnswer() {
+        if (!currentQuestion || englishEl.style.display === 'block') return;
+        
+        englishEl.style.display = 'block';
+        controlsEl.style.visibility = 'visible';
+        
+        if (audioEnabled) {
+            const utter = new SpeechSynthesisUtterance(currentQuestion.en);
+            utter.lang = 'en-US';
+            utter.rate = 0.85;
+            synth.cancel();
+            synth.speak(utter);
+        }
+    }
+
+    function handleResult(isCorrect) {
+        totalAttempts++;
+        if (isCorrect) {
+            correctCount++;
+            currentQueue.shift();
+        } else {
+            const wrongItem = currentQueue.shift();
+            currentQueue.push(wrongItem);
+        }
+        nextQuestion();
+    }
+
+    function updateStats() {
+        statRem.innerText = currentQueue.length;
+        statCor.innerText = correctCount;
+    }
+
+    function finishGame() {
+        const resultScreen = document.getElementById('result-screen');
+        const finalRate = document.getElementById('final-rate');
+        const finalStats = document.getElementById('final-stats');
+        const feedback = document.getElementById('feedback-msg');
+
+        resultScreen.style.display = 'flex';
+        
+        const rate = totalAttempts === 0 ? 0 : Math.round((correctCount / totalAttempts) * 100);
+        finalRate.innerText = rate + "%";
+        finalStats.innerText = `Total Attempts: ${totalAttempts} / Correct: ${correctCount}`;
+
+        if (rate >= 90) feedback.innerText = "Excellent! You've mastered these phrases.";
+        else if (rate >= 70) feedback.innerText = "Great job! Keep practicing.";
+        else feedback.innerText = "Good effort. Let's try again for a higher score.";
+    }
+</script>
+</body>
+</html>

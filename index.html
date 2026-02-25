@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>English Flashcard Master</title>
+    <title>English Flashcard Master - Full Version</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
     <style>
         :root {
@@ -80,8 +80,8 @@
 
         .question-card {
             width: 100%;
-            min-height: 300px;
-            margin-bottom: 20px;
+            min-height: 280px;
+            margin-bottom: 15px;
             background: #fff;
             border: 2px solid #e0e0e0;
             border-radius: 20px;
@@ -105,7 +105,7 @@
 
         #english-text {
             color: var(--accent-color);
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: bold;
             line-height: 1.4;
             display: none;
@@ -120,7 +120,7 @@
             border-radius: 12px;
             padding: 15px;
             text-align: left;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #34495e;
             border-left: 4px solid var(--accent-color);
             margin-top: 10px;
@@ -212,13 +212,13 @@
 
 <div id="app-container">
     <div id="start-overlay">
-        <h1 style="margin-bottom: 5px; font-size: 1.5rem;">English Advanced</h1>
-        <p style="opacity: 0.8; margin-bottom: 20px; font-size: 0.9rem;">学習カテゴリを選択してください</p>
+        <h1 style="margin-bottom: 5px; font-size: 1.5rem;">English Advanced Full</h1>
+        <p style="opacity: 0.8; margin-bottom: 20px; font-size: 0.9rem;">学習カテゴリを選択（全60問以上）</p>
         <div class="category-grid">
-            <button class="category-btn" onclick="startGame('business')">💼 職場の同僚・上司との会話</button>
-            <button class="category-btn" onclick="startGame('meeting')">🌐 Web会議のフレーズ</button>
-            <button class="category-btn" onclick="startGame('daily')">🏠 日常生活（中上級）</button>
-            <button class="category-btn" onclick="startGame('news')">📈 時事問題・トレンド</button>
+            <button class="category-btn" onclick="startGame('business')">💼 職場の会話 (15問)</button>
+            <button class="category-btn" onclick="startGame('meeting')">🌐 Web会議 (15問)</button>
+            <button class="category-btn" onclick="startGame('daily')">🏠 日常生活 (15問)</button>
+            <button class="category-btn" onclick="startGame('news')">📈 時事問題 (20問)</button>
         </div>
     </div>
 
@@ -251,7 +251,6 @@
         <h2>Performance</h2>
         <div class="result-score" id="final-rate">0%</div>
         <p id="final-stats" style="color: #7f8c8d;"></p>
-        <p id="feedback-msg" style="font-weight: bold; margin-top: 15px;"></p>
         <button class="btn" style="background: var(--primary-color); width: 100%; margin-top: 30px;" onclick="location.reload()">タイトルに戻る</button>
     </div>
 </div>
@@ -259,72 +258,77 @@
 <script>
     const questionBank = {
         business: [
-            { 
-                jp: "お忙しいところ恐縮ですが、進捗を伺えますか？", 
-                en: "I'm sorry to bother you, but could you give me an update on the progress?",
-                ex: "<b>I'm sorry to bother you, but...</b>: 「お忙しいところ恐縮ですが」という定番のクッション言葉です。<br><b>give an update on...</b>: 「〜の最新情報を伝える/進捗を報告する」という意味。"
-            },
-            { 
-                jp: "その件につきましては、改めて検討させてください。", 
-                en: "Please let me take that under advisement and get back to you.",
-                ex: "<b>take under advisement</b>: 「（慎重に）検討する」というフォーマルな表現。<br><b>get back to you</b>: 「（あとで）折り返し連絡する/返答する」という意味。"
-            },
-            { 
-                jp: "起業家として成功するためには、既存の枠にとらわれずに考えることが求められる。", 
-                en: "Being a successful entrepreneur requires you to think outside the box.",
-                ex: "<b>think outside the box</b>: 「既存の枠にとらわれずに考える」「独創的な発想をする」という非常に重要なイディオムです。"
-            }
+            { jp: "お忙しいところ恐縮ですが、進捗を伺えますか？", en: "I'm sorry to bother you, but could you give me an update on the progress?", ex: "I'm sorry to bother you は目上の人や忙しい相手へのクッション言葉。" },
+            { jp: "その件につきましては、改めて検討させてください。", en: "Please let me take that under advisement and get back to you.", ex: "take under advisement は「慎重に検討する」というフォーマルな表現。" },
+            { jp: "起業家として成功するためには、既存の枠にとらわれずに考えることが求められる。", en: "Being a successful entrepreneur requires you to think outside the box.", ex: "think outside the box は「斬新な発想をする」という重要イディオム。" },
+            { jp: "このプロジェクトを成功させるために知恵を出し合いましょう。", en: "Let's put our heads together to make this project a success.", ex: "put our heads together で「協力して考える」。" },
+            { jp: "彼はその取引をまとめるために、全力を尽くしました。", en: "He went the extra mile to close the deal.", ex: "go the extra mile は「期待以上の努力をする」。" },
+            { jp: "残念ながら、この提案は今のところ保留にする必要があります。", en: "Unfortunately, we need to put this proposal on the back burner for now.", ex: "put on the back burner は「後回しにする」。" },
+            { jp: "彼は常に周囲の期待以上の成果を出そうと努めています。", en: "He always strives to exceed everyone's expectations.", ex: "strive to は「〜しようと懸命に努力する」。" },
+            { jp: "締め切りに間に合わせるために、急ぐ必要があります。", en: "We need to step it up to meet the deadline.", ex: "step it up は「ピッチを上げる」「努力を強化する」。" },
+            { jp: "これまでの進捗をざっと説明していただけますか？", en: "Could you give me a brief rundown of the progress so far?", ex: "rundown は「概要報告」のこと。" },
+            { jp: "彼は非常に責任感の強いチームプレイヤーです。", en: "He is a highly accountable team player.", ex: "accountable は「責任がある、説明責任を果たす」。" },
+            { jp: "詳細が分かり次第、すぐにご連絡いたします。", en: "I'll let you know as soon as more details become available.", ex: "Details become available で「詳細が判明する」。" },
+            { jp: "それは私たちが今集中すべきことではありません。", en: "That is not something we should be focusing on right now.", ex: "Focus on で「〜に集中する」。" },
+            { jp: "彼の昇進は当然の結果だと言えます。", en: "It's safe to say that his promotion was well-deserved.", ex: "well-deserved は「受けるに値する」。" },
+            { jp: "その提案はコストの面で現実的ではありません。", en: "The proposal is not feasible in terms of cost.", ex: "feasible は「実行可能な」。" },
+            { jp: "まずは共通の認識を持つことが重要です。", en: "First, it's important that we're all on the same page.", ex: "on the same page で「共通認識を持っている」。" }
         ],
         meeting: [
-            { 
-                jp: "電波の状況が悪く、音声が途切れてしまいました。", 
-                en: "The connection was unstable and your audio cut out.",
-                ex: "<b>cut out</b>: 音声が「途切れる」ことを表します。<br><b>unstable</b>: 「不安定な」という意味で、通信状況によく使われます。"
-            },
-            { 
-                jp: "持ち帰って検討し、明日お返事します。", 
-                en: "I'll take that back, look into it, and get back to you tomorrow.",
-                ex: "<b>take back</b>: 会議などで出た話を一旦自分の部署に「持ち帰る」というニュアンス。<br><b>look into</b>: 「調査する/検討する」という意味。"
-            }
+            { jp: "電波の状況が悪く、音声が途切れてしまいました。", en: "The connection was unstable and your audio cut out.", ex: "cut out は「音が途切れる」。" },
+            { jp: "持ち帰って検討し、明日お返事します。", en: "I'll take that back, look into it, and get back to you tomorrow.", ex: "take back は「社内に持ち帰る」。" },
+            { jp: "本題に入る前に、まずは自己紹介をしましょう。", en: "Before we dive in, let's start with a round of introductions.", ex: "dive in は「議論に深く入る」。" },
+            { jp: "結論を言えば、予算を20%削減する必要があります。", en: "The bottom line is that we need to cut the budget by 20%.", ex: "The bottom line is は「要するに」。" },
+            { jp: "今の発言をもう一度詳しく説明していただけますか？", en: "Could you elaborate on what you just said?", ex: "elaborate は「詳細を述べる」。" },
+            { jp: "画面を共有しますので、少々お待ちください。", en: "I'm going to share my screen, so please bear with me for a moment.", ex: "bear with me は「少々お待ちください（我慢してください）」。" },
+            { jp: "すみません、途中で口を挟んでもよろしいでしょうか？", en: "Sorry, may I jump in for a second?", ex: "jump in で「会話に加わる/割り込む」。" },
+            { jp: "あなたがミュートになっているようです。", en: "I think you're on mute.", ex: "定番の「ミュートですよ」。" },
+            { jp: "チャット欄にリンクを貼りました。", en: "I've posted the link in the chat box.", ex: "post in the chat box で「チャットに投稿する」。" },
+            { jp: "もう一度言っていただいてもいいですか？", en: "Could you say that again? You're breaking up.", ex: "breaking up も「音声が途切れている」時に使う。" },
+            { jp: "今日の議題は3つあります。", en: "We have three items on the agenda today.", ex: "on the agenda で「議題に上がって」。" },
+            { jp: "時間を守るために次に進みましょう。", en: "In the interest of time, let's move on to the next topic.", ex: "In the interest of time は「時間を節約するために」。" },
+            { jp: "それについては後で詳しくメールします。", en: "I'll follow up with an email regarding that later.", ex: "follow up は「後追いをする/詳細を追う」。" },
+            { jp: "誰か意見や質問はありますか？", en: "Does anyone have any input or questions?", ex: "input は「意見/助言」の意味でよく使う。" },
+            { jp: "そろそろ時間ですので、ここで切り上げましょう。", en: "It's about time, so let's wrap it up here.", ex: "wrap up は「終える/まとめる」。" }
         ],
         daily: [
-            { 
-                jp: "飯田橋駅から東京駅は、まず総武線に乗り、お茶の水駅で中央線に乗り換えます。", 
-                en: "To get from Iidabashi to Tokyo Station, first take the Sobu Line and then transfer to the Chuo Line at Ochanomizu Station.",
-                ex: "<b>transfer to...</b>: 「〜に乗り換える」。<br><b>at [Station]</b>: 駅名には前置詞 at を使います。"
-            },
-            { 
-                jp: "全く君の言う通りだね。人は病気になるまで健康を当たり前だと思っているからね。", 
-                en: "You're absolutely right. People take their health for granted until they get sick.",
-                ex: "<b>take [something] for granted</b>: 「〜を当たり前だと思う」という必須熟語です。感謝を忘れている時にも使われます。"
-            }
+            { jp: "飯田橋駅から東京駅は、中央線に乗り換えます。", en: "To get to Tokyo Station, transfer to the Chuo Line.", ex: "transfer to は「乗り換える」。" },
+            { jp: "人は病気になるまで健康を当たり前だと思っている。", en: "People take their health for granted until they get sick.", ex: "take for granted は「当たり前だと思う」。" },
+            { jp: "昨日は一晩中、激しく雨が降っていました。", en: "It was raining cats and dogs all night long.", ex: "raining cats and dogs は「土砂降り」。" },
+            { jp: "彼は私の冗談を真に受けて、怒ってしまいました。", en: "He took my joke to heart and got angry.", ex: "take to heart は「真に受ける」。" },
+            { jp: "久しぶりに地元の友達に会えて楽しかったです。", en: "It was great catching up with my old friends.", ex: "catch up with で「久しぶりに近況を話し合う」。" },
+            { jp: "今の仕事にすっかり慣れましたか？", en: "Have you fully settled into your new job yet?", ex: "settle into は「馴染む/落ち着く」。" },
+            { jp: "あいにく、その日は予定が入っています。", en: "Unfortunately, I'm tied up that day.", ex: "be tied up で「忙しくて手が離せない/予定がある」。" },
+            { jp: "彼は私の期待を裏切ったことがありません。", en: "He has never let me down.", ex: "let someone down は「人をがっかりさせる」。" },
+            { jp: "どういたしまして。いつでも言ってください。", en: "Don't mention it. Any time.", ex: "Don't mention it は「礼には及ばない」。" },
+            { jp: "今日は一日中、体がだるいです。", en: "I've been feeling sluggish all day today.", ex: "sluggish は「体が重い、だるい」。" },
+            { jp: "それは一石二鳥ですね。", en: "That's killing two birds with one stone.", ex: "一石二鳥の直訳イディオム。" },
+            { jp: "彼はいつも他人の悪口を言っています。", en: "He is always speaking ill of others.", ex: "speak ill of で「〜の悪口を言う」。" },
+            { jp: "今のところ、すべて順調です。", en: "So far, so good.", ex: "「今のところ問題なし」という決まり文句。" },
+            { jp: "その映画は本当に感動的でした。", en: "That movie was truly touching.", ex: "touching は「（心に触れるような）感動的な」。" },
+            { jp: "お名前を伺ってもよろしいですか？", en: "May I have your name, please?", ex: "丁寧な名前の聞き方。" }
         ],
         news: [
-            { 
-                jp: "低賃金や労働の過酷さから介護の担い手が不足している。", 
-                en: "There is a shortage of caregivers due to low wages and harsh working conditions.",
-                ex: "<b>shortage of...</b>: 「〜の不足」。<br><b>working conditions</b>: 「労働条件/労働環境」。<br><b>harsh</b>: 「過酷な/厳しい」。"
-            },
-            { 
-                jp: "地方のインフラが老朽化している。", 
-                en: "Infrastructure in rural areas is becoming obsolete and aging.",
-                ex: "<b>obsolete</b>: 「時代遅れの/陳腐化した」。老朽化して使い物にならなくなるニュアンス。<br><b>rural areas</b>: 「地方/田舎」。"
-            },
-            { 
-                jp: "AIの進化により、仕事を奪われる人が現れ始めており、アメリカのビッグテック企業ではエンジニアのレイオフも始まっている。", 
-                en: "With the advancement of AI, people are beginning to lose their jobs, and layoffs of engineers have already started at major U.S. tech companies.",
-                ex: "<b>advancement of AI</b>: 「AIの進歩」。<br><b>layoff</b>: 「一時解雇」ですが、昨今のテック業界での人員削減を指す一般語。"
-            },
-            { 
-                jp: "AIに代替されない職業として、ブルーカラーの人気も高まっている。", 
-                en: "Blue-collar jobs are gaining popularity as professions that are less likely to be replaced by AI.",
-                ex: "<b>blue-collar jobs</b>: 現場作業や肉体労働を伴う職業。<br><b>be replaced by...</b>: 「〜に取って代わられる」。"
-            },
-            { 
-                jp: "社会の二極化は、民主主義の安定に対する重大な脅威となっています。", 
-                en: "The polarization of society has become a significant threat to the stability of democracy.",
-                ex: "<b>polarization</b>: 「二極化」。<br><b>significant threat</b>: 「重大な脅威」。"
-            }
+            { jp: "低賃金や労働の過酷さから介護の担い手が不足している。", en: "There is a shortage of caregivers due to low wages and harsh working conditions.", ex: "harsh working conditions は「過酷な労働環境」。" },
+            { jp: "地方のインフラが老朽化している。", en: "Infrastructure in rural areas is becoming obsolete and aging.", ex: "obsolete は「廃れた、旧式の」。" },
+            { jp: "AIの進化により、エンジニアのレイオフも始まっている。", en: "With the advancement of AI, layoffs of engineers have already started.", ex: "layoff は「一時解雇」。" },
+            { jp: "AIに代替されない職業としてブルーカラーの人気も高まっている。", en: "Blue-collar jobs are gaining popularity as professions less likely to be replaced by AI.", ex: "replaced by AI で「AIに取って代わられる」。" },
+            { jp: "社会の二極化は、民主主義に対する重大な脅威です。", en: "The polarization of society has become a significant threat to democracy.", ex: "polarization は「極端な分断、二極化」。" },
+            { jp: "多くの国が温室効果ガスの排出量を削減するために規制を導入した。", en: "Many countries introduced regulations to curb greenhouse gas emissions.", ex: "curb は「抑制する」。" },
+            { jp: "世界経済はインフレの影響で不透明な状況が続いています。", en: "The global economy remains uncertain due to the impact of inflation.", ex: "uncertain は「不透明、不安定」。" },
+            { jp: "その技術革新は、医療を根底から変える可能性があります。", en: "That innovation has the potential to revolutionize healthcare.", ex: "revolutionize は「〜に革命を起こす」。" },
+            { jp: "政府は少子高齢化対策を検討している。", en: "The government is considering measures to address the shrinking and aging population.", ex: "address は「（課題に）取り組む」。" },
+            { jp: "持続可能な開発目標（SDGs）は世界共通の課題です。", en: "The SDGs are common global issues to be addressed.", ex: "SDGsは Sustainable Development Goals の略。" },
+            { jp: "再生可能エネルギーへの転換が急務となっています。", en: "Transitioning to renewable energy has become an urgent task.", ex: "urgent task で「急務」。" },
+            { jp: "デジタル格差が新たな社会問題となっています。", en: "The digital divide is becoming a new social issue.", ex: "digital divide は「情報の格差」。" },
+            { jp: "その国は深刻な経済危機に直面しています。", en: "The country is facing a severe economic crisis.", ex: "facing a crisis で「危機に直面する」。" },
+            { jp: "プライバシー保護と利便性のバランスが求められている。", en: "A balance between privacy protection and convenience is required.", ex: "balance between A and B." },
+            { jp: "仮想通貨の市場は非常に変動が激しいです。", en: "The cryptocurrency market is highly volatile.", ex: "volatile は「変動しやすい、不安定な」。" },
+            { jp: "ワークライフバランスの重要性が再認識されている。", en: "The importance of work-life balance is being recognized again.", ex: "recognized は「認識される」。" },
+            { jp: "食料自給率の向上が求められています。", en: "Improvement of the food self-sufficiency rate is required.", ex: "food self-sufficiency rate は「食料自給率」。" },
+            { jp: "サプライチェーンの混乱が製品価格を押し上げている。", en: "Supply chain disruptions are driving up product prices.", ex: "disruptions は「混乱、中断」。" },
+            { jp: "最低賃金の引き上げが全国で議論されています。", en: "Increasing the minimum wage is being discussed nationwide.", ex: "minimum wage は「最低賃金」。" },
+            { jp: "少子化が労働力不足に拍車をかけています。", en: "The declining birthrate is accelerating the labor shortage.", ex: "accelerate で「〜に拍車をかける/加速させる」。" }
         ]
     };
 
@@ -378,9 +382,8 @@
         currentQuestion = currentQueue[0];
         japaneseEl.innerText = currentQuestion.jp;
         englishEl.innerText = currentQuestion.en;
-        explanationContent.innerHTML = currentQuestion.ex || "解説は準備中です。";
+        explanationContent.innerHTML = currentQuestion.ex || "解説を準備中...";
         
-        // UIリセット
         englishEl.style.display = 'none';
         explanationBox.style.display = 'none';
         btnCorrect.style.display = 'none';
@@ -404,7 +407,7 @@
         if (audioEnabled) {
             const utter = new SpeechSynthesisUtterance(currentQuestion.en);
             utter.lang = 'en-US';
-            utter.rate = 0.85;
+            utter.rate = 0.9;
             synth.cancel();
             synth.speak(utter);
         }
@@ -419,12 +422,10 @@
             correctCount++;
             currentQueue.shift();
         } else {
-            // 間違えた場合は末尾に回す
             const wrongItem = currentQueue.shift();
             currentQueue.push(wrongItem);
         }
 
-        // 解説を表示
         explanationBox.style.display = 'block';
         btnCorrect.style.display = 'none';
         btnWrong.style.display = 'none';
@@ -445,11 +446,6 @@
         const rate = totalAttempts === 0 ? 0 : Math.round((correctCount / totalAttempts) * 100);
         document.getElementById('final-rate').innerText = rate + "%";
         document.getElementById('final-stats').innerText = `回答数: ${totalAttempts} / 正解数: ${correctCount}`;
-        
-        const feedback = document.getElementById('feedback-msg');
-        if (rate >= 90) feedback.innerText = "完璧です！この調子で頑張りましょう。";
-        else if (rate >= 70) feedback.innerText = "素晴らしい！あと少しでマスターです。";
-        else feedback.innerText = "お疲れ様でした。何度も繰り返して覚えましょう。";
     }
 </script>
 </body>

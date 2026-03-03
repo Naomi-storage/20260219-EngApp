@@ -1,0 +1,302 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  ChevronLeft, ChevronRight, RotateCcw, Search, 
+  BookOpen, Star, Filter, Layout, Zap, Brain, 
+  CheckCircle2, Volume2, Settings2, Trash2, Info
+} from 'lucide-react';
+
+const App = () => {
+  // --- データセクション (ご指定の形式に統一) ---
+  const initialPhrases = [
+    // --- 生活・日常 (Daily Life) ---
+    { id: 1, jp: "給料ぎりぎりの生活はしたくないよ", en: "I don't wanna live from paycheck to paycheck.", cat: "Daily", note: "Living paycheck to paycheck: 生活がギリギリ" },
+    { id: 2, jp: "もっと給料のよい仕事を探してる。", en: "I'm looking for a better paying job.", cat: "Daily" },
+    { id: 3, jp: "彼らは足音がうるさい", en: "They have a heavy foot.", cat: "Daily" },
+    { id: 4, jp: "どんなサングラスが流行っているんですか？", en: "What kind of sunglasses are in style?", cat: "Daily", note: "be in style: 流行っている" },
+    { id: 5, jp: "私が落ち込んでいた時、彼が私をなぐさめてくれた", en: "He comforted me when I was feeling down.", cat: "Daily" },
+    { id: 6, jp: "シャツのボタンが取れてるよ", en: "You're missing a button on your shirt.", cat: "Daily" },
+    { id: 7, jp: "（レジなどで）並んでますか？", en: "Are you in line?", cat: "Daily" },
+    { id: 8, jp: "すぐに慣れるよ", en: "You'll get used to it.", cat: "Daily" },
+    { id: 9, jp: "イメチェンしたい", en: "I need a make-over.", cat: "Daily" },
+    { id: 10, jp: "顔色悪いよ", en: "You look pale.", cat: "Daily" },
+    { id: 11, jp: "おっちょこちょいです", en: "I'm clumsy.", cat: "Daily", note: "clumsy: 不器用な、手先が不器用な" },
+
+    // --- 感情・対人 (Emotions & Social) ---
+    { id: 20, jp: "「気を悪くしないでね」「ムキになるな」", en: "Don’t take it personally.", cat: "Social" },
+    { id: 21, jp: "個人的な恨みはないよ、ビジネスだから仕方がない", en: "It’s not personal, it’s business.", cat: "Social" },
+    { id: 22, jp: "人は病気になるまで健康を当たり前だと思っている。", en: "People take their health for granted until they get sick.", cat: "Social", note: "take A for granted: Aを当然と思う" },
+    { id: 23, jp: "そんなの信じないよ。話がうますぎる。", en: "I’m not buying it. It sounds too good to be true.", cat: "Social", note: "I’m not buying it = I don’t believe you." },
+    { id: 24, jp: "試しても損はないよ。", en: "Can't hurt to try. You might surprise yourself.", cat: "Social", note: "Can’t hurt to try = 試して損はない" },
+    { id: 25, jp: "もう乗り越えた（吹っ切れた）よ。忘れよう。", en: "I’m over it now. Let's just forget about it.", cat: "Social" },
+    { id: 26, jp: "来客中なんだ。", en: "I have company. My sister is visiting me.", cat: "Social", note: "Company = 来客（不可算名詞）" },
+    { id: 27, jp: "もし私があなたの立場だったら、そんな仕事すぐに辞めるわ！", en: "If I were in your shoes, I'd quit such a job right now!", cat: "Social" },
+    { id: 28, jp: "彼の立場に立ってみるべきよ。", en: "You should put yourself in his shoes.", cat: "Social" },
+    { id: 29, jp: "誰のせいでもない", en: "I think no one is to blame.", cat: "Social" },
+
+    // --- ビジネス (Business & Professional) ---
+    { id: 50, jp: "今日は人手不足なんです。", en: "We are short-staffed today.", cat: "Business", note: "short-staffed = 人手が足りない" },
+    { id: 51, jp: "仕事に忙殺されています。", en: "I’m swamped with work.", cat: "Business", note: "swamped = 非常に忙しい" },
+    { id: 52, jp: "全員の認識が一致しているか確認しよう。", en: "Let's make sure we're all on the same page.", cat: "Business", note: "on the same page: 考えが一致している" },
+    { id: 53, jp: "その場で臨機応変に計画を変更した。", en: "We had to change the plan on the fly.", cat: "Business", note: "on the fly: 臨機応変に、その場で" },
+    { id: 54, jp: "あの質問は全くの不意打ちだった。", en: "That question came completely out of left field.", cat: "Business", note: "out of left field: 突然、不意に" },
+    { id: 55, jp: "即興でやるしかない。", en: "I'll just have to wing it.", cat: "Business", note: "wing it: 即興でやる、準備なしでこなす" },
+    { id: 56, jp: "もう仕事を切り上げているべきだった。", en: "We should have called it a day by now.", cat: "Business", note: "call it a day: 切り上げる" },
+    { id: 57, jp: "君の努力はすぐに報われるよ。", en: "Your efforts will soon pay off.", cat: "Business" },
+    { id: 58, jp: "ワークフローは特定の業界に特化しています。", en: "The workflows are super-specific to one industry.", cat: "Business" },
+    { id: 59, jp: "今後は、成長に注力するのが我々の戦略だ。", en: "Going forward, our strategy is to focus on growth.", cat: "Business", note: "Going forward: 今後は、これから先は" },
+    { id: 60, jp: "お忙しいところ恐縮ですが、進捗を伺えますか？", en: "I'm sorry to bother you, but could you give me an update on the progress?", cat: "Business" },
+
+    // --- 特殊イディオム・表現 (Idioms & Advanced) ---
+    { id: 80, jp: "もう終わったことだ（水に流そう）。", en: "It's water under the bridge.", cat: "Idiom" },
+    { id: 81, jp: "友達が忽然と消えてしまった。", en: "My friends vanished into thin air.", cat: "Idiom", note: "vanish into thin air: 跡形もなく消える" },
+    { id: 82, jp: "彼はまだ未熟だ。", en: "He is still green.", cat: "Idiom", note: "green = 経験不足、未熟な" },
+    { id: 83, jp: "チャンスを逃したなんて信じられない。", en: "I can't believe I missed the boat.", cat: "Idiom", note: "miss the boat: チャンスを逃す" },
+    { id: 84, jp: "なぜそんなに見た目にこだわっているの？", en: "Why are you so hung up on your appearance?", cat: "Idiom", note: "hung up on: ～に執着している" },
+    { id: 85, jp: "過去を引きずりたくはない。", en: "I don't want to dwell on the past.", cat: "Idiom", note: "dwell on: くよくよ考える" },
+    { id: 86, jp: "場違いな気がする。", en: "I feel like a fish out of water.", cat: "Idiom", note: "fish out of water: 陸に上がった河童、場違い" },
+    { id: 87, jp: "多くのことを犠牲にして、夢を叶えた。", en: "I've had my dream come true at the expense of many things.", cat: "Idiom", note: "at the expense of: ～を犠牲にして" },
+    { id: 88, jp: "本当にそうだよね（同意）。", en: "Tell me about it.", cat: "Idiom", note: "Tell me about it = まったくその通りだ" }
+  ];
+
+  // --- 状態管理 ---
+  const [phrases, setPhrases] = useState(initialPhrases);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [selectedCat, setSelectedCat] = useState('All');
+  const [showFinished, setShowFinished] = useState(false);
+  const [starredIds, setStarredIds] = useState(new Set());
+
+  // --- フィルタリング ---
+  const filteredList = useMemo(() => {
+    return selectedCat === 'All' 
+      ? phrases 
+      : phrases.filter(p => p.cat === selectedCat);
+  }, [phrases, selectedCat]);
+
+  const currentCard = filteredList[currentIndex];
+
+  // --- アクション ---
+  const handleNext = () => {
+    if (currentIndex < filteredList.length - 1) {
+      setIsFlipped(false);
+      setTimeout(() => setCurrentIndex(prev => prev + 1), 150);
+    } else {
+      setShowFinished(true);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      setIsFlipped(false);
+      setTimeout(() => setCurrentIndex(prev => prev - 1), 150);
+    }
+  };
+
+  const handleFlip = () => setIsFlipped(!isFlipped);
+
+  const toggleStar = (e, id) => {
+    e.stopPropagation();
+    const newStarred = new Set(starredIds);
+    if (newStarred.has(id)) newStarred.delete(id);
+    else newStarred.add(id);
+    setStarredIds(newStarred);
+  };
+
+  const handleRestart = () => {
+    setCurrentIndex(0);
+    setIsFlipped(false);
+    setShowFinished(false);
+  };
+
+  // --- カテゴリーアイコン ---
+  const getCatColor = (cat) => {
+    switch(cat) {
+      case 'Daily': return 'bg-blue-100 text-blue-600';
+      case 'Social': return 'bg-rose-100 text-rose-600';
+      case 'Business': return 'bg-amber-100 text-amber-600';
+      case 'Idiom': return 'bg-indigo-100 text-indigo-600';
+      default: return 'bg-slate-100 text-slate-600';
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 p-4 md:p-8">
+      <div className="max-w-xl mx-auto">
+        
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200">
+              <Brain className="text-white w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight">Flashcard Ultra</h1>
+              <p className="text-xs text-slate-400 font-medium uppercase tracking-widest">Advanced Learner Edition</p>
+            </div>
+          </div>
+          <button className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
+            <Settings2 className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Progress Bar */}
+        {!showFinished && currentCard && (
+          <div className="mb-6">
+            <div className="flex justify-between items-end mb-2">
+              <span className="text-sm font-bold text-indigo-600">{currentIndex + 1} <span className="text-slate-300 font-normal">/ {filteredList.length}</span></span>
+              <span className="text-xs font-semibold text-slate-400 uppercase">{selectedCat} Mode</span>
+            </div>
+            <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-indigo-500 transition-all duration-500 ease-out rounded-full"
+                style={{ width: `${((currentIndex + 1) / filteredList.length) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Category Filter */}
+        {!showFinished && (
+          <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+            {['All', 'Daily', 'Social', 'Business', 'Idiom'].map(cat => (
+              <button
+                key={cat}
+                onClick={() => { setSelectedCat(cat); setCurrentIndex(0); setIsFlipped(false); }}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
+                  selectedCat === cat 
+                    ? 'bg-slate-900 text-white shadow-md' 
+                    : 'bg-white text-slate-500 border border-slate-200 hover:border-indigo-300'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Card Area */}
+        {!showFinished && currentCard ? (
+          <div className="perspective-1000 relative h-96 w-full">
+            <div 
+              onClick={handleFlip}
+              className={`relative w-full h-full transition-all duration-500 preserve-3d cursor-pointer ${isFlipped ? 'rotate-y-180' : ''}`}
+            >
+              {/* Front side (Japanese) */}
+              <div className="absolute inset-0 backface-hidden bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col p-8">
+                <div className="flex justify-between items-center mb-4">
+                  <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${getCatColor(currentCard.cat)}`}>
+                    {currentCard.cat}
+                  </span>
+                  <button onClick={(e) => toggleStar(e, currentCard.id)}>
+                    <Star className={`w-6 h-6 transition-colors ${starredIds.has(currentCard.id) ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
+                  </button>
+                </div>
+                <div className="flex-1 flex flex-col justify-center items-center text-center">
+                  <h2 className="text-xl md:text-2xl font-bold leading-tight text-slate-800 tracking-tight">
+                    {currentCard.jp}
+                  </h2>
+                </div>
+                <div className="text-center text-slate-300 text-[10px] font-black uppercase tracking-widest animate-pulse mt-4">
+                  Tap to Reveal English
+                </div>
+              </div>
+
+              {/* Back side (English) */}
+              <div className="absolute inset-0 backface-hidden bg-slate-900 rounded-[2.5rem] shadow-2xl rotate-y-180 p-8 flex flex-col text-white">
+                <div className="flex justify-between items-center mb-6">
+                   <div className="flex items-center gap-2">
+                     <Zap className="text-amber-400 w-4 h-4 fill-amber-400" />
+                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">English Phrase</span>
+                   </div>
+                   <div className="bg-slate-800 p-2 rounded-lg">
+                     <Volume2 className="w-4 h-4 text-slate-400" />
+                   </div>
+                </div>
+                <div className="flex-1 flex flex-col justify-center items-center text-center">
+                  <p className="text-2xl md:text-3xl font-bold leading-relaxed tracking-tight text-indigo-100">
+                    {currentCard.en}
+                  </p>
+                  
+                  {currentCard.note && (
+                    <div className="mt-8 p-4 bg-slate-800/50 rounded-2xl border border-white/5 w-full">
+                      <div className="flex items-center gap-2 mb-2 justify-center">
+                        <Info className="w-3.5 h-3.5 text-indigo-400" />
+                        <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Note</span>
+                      </div>
+                      <p className="text-xs text-slate-400 italic">
+                        {currentCard.note}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Result Screen */
+          <div className="bg-white rounded-[2.5rem] shadow-xl p-12 text-center border border-slate-100">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="text-green-500 w-10 h-10" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">Session Complete!</h2>
+            <p className="text-slate-500 mb-8 leading-relaxed">
+              素晴らしい！<br/>{filteredList.length}個のフレーズを学習しました。
+            </p>
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="bg-slate-50 p-4 rounded-2xl">
+                <div className="text-2xl font-bold text-indigo-600">{filteredList.length}</div>
+                <div className="text-[10px] uppercase font-bold text-slate-400">Mastered</div>
+              </div>
+              <div className="bg-slate-50 p-4 rounded-2xl">
+                <div className="text-2xl font-bold text-amber-500">{starredIds.size}</div>
+                <div className="text-[10px] uppercase font-bold text-slate-400">Starred</div>
+              </div>
+            </div>
+            <button 
+              onClick={handleRestart}
+              className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            >
+              <RotateCcw className="w-5 h-5" />
+              Restart Deck
+            </button>
+          </div>
+        )}
+
+        {/* Control Buttons */}
+        {!showFinished && (
+          <div className="mt-12 flex justify-between items-center gap-4">
+            <button 
+              onClick={handlePrev}
+              disabled={currentIndex === 0}
+              className={`flex-1 py-4 rounded-2xl border-2 font-bold transition-all flex items-center justify-center gap-2 ${
+                currentIndex === 0 
+                ? 'border-slate-100 text-slate-200 cursor-not-allowed' 
+                : 'border-white bg-white text-slate-700 shadow-sm hover:border-slate-200 active:bg-slate-50'
+              }`}
+            >
+              <ChevronLeft className="w-5 h-5" />
+              Prev
+            </button>
+            <button 
+              onClick={handleNext}
+              className="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-bold shadow-xl shadow-slate-200 hover:bg-slate-800 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            >
+              {currentIndex === filteredList.length - 1 ? 'Finish' : 'Next Phrase'}
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .perspective-1000 { perspective: 1000px; }
+        .backface-hidden { backface-visibility: hidden; }
+        .preserve-3d { transform-style: preserve-3d; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+      `}} />
+    </div>
+  );
+};
+
+export default App;

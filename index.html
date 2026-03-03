@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>English Flashcard Master - expanded Volume</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    <title>English Flashcard Master - Ultra</title>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -72,16 +71,15 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 25px;
             justify-content: space-between;
             align-items: center;
-            overflow-y: auto;
         }
 
         .question-card {
             width: 100%;
-            min-height: 280px;
-            margin-bottom: 15px;
+            flex-grow: 1;
+            margin-bottom: 20px;
             background: #fff;
             border: 2px solid #e0e0e0;
             border-radius: 20px;
@@ -90,14 +88,19 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 25px;
+            padding: 30px;
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
 
+        .question-card:active {
+            transform: scale(0.98);
+            background: #fdfdfd;
+        }
+
         #japanese-text {
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             color: #7f8c8d;
             margin-bottom: 15px;
             line-height: 1.5;
@@ -105,32 +108,11 @@
 
         #english-text {
             color: var(--accent-color);
-            font-size: 1.25rem;
+            font-size: 1.4rem;
             font-weight: bold;
             line-height: 1.4;
             display: none;
             word-wrap: break-word;
-            margin-bottom: 15px;
-        }
-
-        #explanation-box {
-            display: none;
-            width: 100%;
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 15px;
-            text-align: left;
-            font-size: 0.85rem;
-            color: #34495e;
-            border-left: 4px solid var(--accent-color);
-            margin-top: 10px;
-        }
-
-        .explanation-title {
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 5px;
-            display: block;
         }
 
         .controls {
@@ -151,11 +133,9 @@
             transition: opacity 0.2s;
         }
 
-        .btn:active { opacity: 0.7; }
-
+        .btn:active { opacity: 0.8; }
         .btn-correct { background-color: var(--success-color); }
         .btn-wrong { background-color: var(--error-color); }
-        .btn-next { background-color: var(--primary-color); grid-column: span 2; display: none; }
         .btn-finish { background-color: #bdc3c7; grid-column: span 2; margin-top: 5px; color: #2c3e50; }
 
         #start-overlay {
@@ -169,6 +149,7 @@
             align-items: center;
             z-index: 100;
             padding: 20px;
+            overflow-y: auto;
         }
 
         .category-grid {
@@ -177,8 +158,6 @@
             gap: 10px;
             width: 100%;
             margin-top: 20px;
-            overflow-y: auto;
-            max-height: 60vh;
         }
 
         .category-btn {
@@ -190,7 +169,10 @@
             text-align: left;
             font-size: 0.9rem;
             cursor: pointer;
+            transition: background 0.2s;
         }
+
+        .category-btn:hover { background: rgba(255,255,255,0.2); }
 
         #result-screen {
             position: absolute;
@@ -212,20 +194,21 @@
 
 <div id="app-container">
     <div id="start-overlay">
-        <h1 style="margin-bottom: 5px; font-size: 1.5rem;">English Flashcard Master</h1>
-        <p style="opacity: 0.8; margin-bottom: 20px; font-size: 0.9rem;">全80問へ拡充完了！</p>
+        <h1 style="margin-bottom: 5px; font-size: 1.5rem;">English Learning Master</h1>
+        <p style="opacity: 0.8; margin-bottom: 20px; font-size: 0.9rem;">中級〜上級実戦フレーズ</p>
+        
         <div class="category-grid">
-            <button class="category-btn" onclick="startGame('business')">💼 職場の会話 (20問)</button>
-            <button class="category-btn" onclick="startGame('meeting')">🌐 Web会議 (20問)</button>
-            <button class="category-btn" onclick="startGame('daily')">🏠 日常生活 (20問)</button>
-            <button class="category-btn" onclick="startGame('news')">📈 時事問題 (20問)</button>
+            <button class="category-btn" onclick="startGame('business')">💼 ビジネス (交渉・戦略)</button>
+            <button class="category-btn" onclick="startGame('meeting')">🌐 Web会議 (進行・議論)</button>
+            <button class="category-btn" onclick="startGame('daily')">🏠 日常生活 (状況説明・感情)</button>
+            <button class="category-btn" onclick="startGame('news')">📈 時事ニュース (社会・経済)</button>
         </div>
     </div>
 
     <header id="current-category-name">English Master</header>
     
     <div class="stats-bar">
-        <span>未完了: <span id="stat-remaining">0</span></span>
+        <span>残り: <span id="stat-remaining">0</span></span>
         <span>正解数: <span id="stat-correct">0</span></span>
     </div>
 
@@ -233,17 +216,12 @@
         <div class="question-card" id="card" onclick="showAnswer()">
             <div id="japanese-text">読み込み中...</div>
             <div id="english-text"></div>
-            <div id="explanation-box">
-                <span class="explanation-title">💡 Idioms & Tips</span>
-                <div id="explanation-content"></div>
-            </div>
         </div>
 
-        <div class="controls" id="game-controls">
-            <button class="btn btn-correct" id="btn-correct" onclick="judge(true)" style="display: none;">覚えた</button>
-            <button class="btn btn-wrong" id="btn-wrong" onclick="judge(false)" style="display: none;">また出す</button>
-            <button class="btn btn-next" id="btn-next" onclick="nextQuestion()">次へ進む</button>
-            <button class="btn btn-finish" id="btn-finish" onclick="finishGame()">終了</button>
+        <div class="controls" id="game-controls" style="visibility: hidden;">
+            <button class="btn btn-correct" onclick="handleResult(true)">覚えた</button>
+            <button class="btn btn-wrong" onclick="handleResult(false)">また出す</button>
+            <button class="btn btn-finish" onclick="finishGame()">終了</button>
         </div>
     </div>
 
@@ -251,6 +229,7 @@
         <h2>Performance</h2>
         <div class="result-score" id="final-rate">0%</div>
         <p id="final-stats" style="color: #7f8c8d;"></p>
+        <p id="feedback-msg" style="font-weight: bold; margin-top: 15px;"></p>
         <button class="btn" style="background: var(--primary-color); width: 100%; margin-top: 30px;" onclick="location.reload()">タイトルに戻る</button>
     </div>
 </div>
@@ -258,100 +237,120 @@
 <script>
     const questionBank = {
         business: [
-            { jp: "お忙しいところ恐縮ですが、進捗を伺えますか？", en: "I'm sorry to bother you, but could you give me an update on the progress?", ex: "I'm sorry to bother you は忙しい相手への定番クッション。" },
-            { jp: "その件につきましては、改めて検討させてください。", en: "Please let me take that under advisement and get back to you.", ex: "take under advisement は「慎重に検討する」というフォーマルな表現。" },
-            { jp: "起業家として成功するためには、既存の枠にとらわれずに考えることが求められる。", en: "Being a successful entrepreneur requires you to think outside the box.", ex: "think outside the box は「斬新な発想をする」という重要イディオム。" },
-            { jp: "このプロジェクトを成功させるために知恵を出し合いましょう。", en: "Let's put our heads together to make this project a success.", ex: "put our heads together で「協力して考える」。" },
-            { jp: "彼はその取引をまとめるために、全力を尽くしました。", en: "He went the extra mile to close the deal.", ex: "go the extra mile は「期待以上の努力をする」。" },
-            { jp: "残念ながら、この提案は今のところ保留にする必要があります。", en: "Unfortunately, we need to put this proposal on the back burner for now.", ex: "put on the back burner は「優先順位を下げる」。" },
-            { jp: "彼は常に周囲の期待以上の成果を出そうと努めています。", en: "He always strives to exceed everyone's expectations.", ex: "strive to は「〜しようと懸命に努力する」。" },
-            { jp: "締め切りに間に合わせるために、急ぐ必要があります。", en: "We need to step it up to meet the deadline.", ex: "step it up は「ピッチを上げる」「努力を強化する」。" },
-            { jp: "これまでの進捗をざっと説明していただけますか？", en: "Could you give me a brief rundown of the progress so far?", ex: "rundown は「概要報告」のこと。" },
-            { jp: "彼は非常に責任感の強いチームプレイヤーです。", en: "He is a highly accountable team player.", ex: "accountable は「責任がある、説明責任を果たす」。" },
-            { jp: "詳細が分かり次第、すぐにご連絡いたします。", en: "I'll let you know as soon as more details become available.", ex: "become available は「判明する、利用可能になる」。" },
-            { jp: "それは私たちが今集中すべきことではありません。", en: "That is not something we should be focusing on right now.", ex: "Focus on で「〜に集中する」。" },
-            { jp: "彼の昇進は当然の結果だと言えます。", en: "It's safe to say that his promotion was well-deserved.", ex: "well-deserved は「受けるに値する」。" },
-            { jp: "その提案はコストの面で現実的ではありません。", en: "The proposal is not feasible in terms of cost.", ex: "feasible は「実行可能な」。" },
-            { jp: "まずは共通の認識を持つことが重要です。", en: "First, it's important that we're all on the same page.", ex: "on the same page で「共通認識を持っている」。" },
-            { jp: "彼は非常に困難な状況で、見事に役割を果たしました。", en: "He rose to the occasion in an extremely difficult situation.", ex: "rise to the occasion は「難局を乗り切る、期待に応える」。" },
-            { jp: "この製品の市場における優位性を維持する必要があります。", en: "We need to maintain our competitive edge in the market.", ex: "competitive edge で「競争優位性」。" },
-            { jp: "私はあなたの意見を全面的に支持します。", en: "I am fully behind your opinion.", ex: "be behind someone で「人を支持する」。" },
-            { jp: "その決定は私たちの長期的な目標と一致しています。", en: "The decision aligns with our long-term goals.", ex: "align with は「〜と一致する、歩調を合わせる」。" },
-            { jp: "彼は新しい環境にすぐに順応しました。", en: "He hit the ground running in his new environment.", ex: "hit the ground running は「最初からフル回転で活躍する」。" }
+            { jp: "お忙しいところ恐縮ですが、進捗を伺えますか？", en: "I'm sorry to bother you, but could you give me an update on the progress?" },
+            { jp: "その件につきましては、改めて検討させてください。", en: "Please let me take that under advisement and get back to you." },
+            { jp: "ご期待に沿えず、大変心苦しく思っております。", en: "We deeply regret that we were unable to meet your expectations." },
+            { jp: "早急にこの問題に対処する必要があります。", en: "We need to address this issue as a matter of urgency." },
+            { jp: "コスト削減と品質維持のバランスを取る必要があります。", en: "We need to strike a balance between cost reduction and maintaining quality." },
+            { jp: "この提案のメリットとデメリットを比較検討しましょう。", en: "Let's weigh the pros and cons of this proposal." },
+            { jp: "不測の事態に備えて、代替案を用意しておくべきです。", en: "We should have a contingency plan in case of unforeseen circumstances." },
+            { jp: "彼の提案は非常に説得力があり、検討に値します。", en: "His proposal is very compelling and worth considering." },
+            { jp: "市場の動向を注視し、戦略を柔軟に変更しましょう。", en: "Let's keep a close eye on market trends and pivot our strategy flexibly." },
+            { jp: "このプロジェクトの成功は、チーム全体の協力にかかっています。", en: "The success of this project hinges on the cooperation of the entire team." },
+            { jp: "期待以上の成果を上げるために、全力を尽くします。", en: "I will do my utmost to exceed your expectations." },
+            { jp: "御社のニーズに合わせて、サービスをカスタマイズ可能です。", en: "We can tailor our services to meet your specific needs." },
+            { jp: "現時点では、詳細を明らかにすることは控えさせていただきます。", en: "At this point, I would like to refrain from disclosing the details." },
+            { jp: "契約の条件について、いくつかの修正を提案させてください。", en: "Allow me to propose some amendments to the terms of the contract." },
+            { jp: "競合他社に差をつけるための独自の強みが必要です。", en: "We need a unique value proposition to differentiate ourselves from competitors." },
+            { jp: "予算の制約があるため、優先順位を決定しなければなりません。", en: "Due to budget constraints, we must determine our priorities." },
+            { jp: "プロジェクトの遅延を取り戻すために、リソースを追加投入します。", en: "We will allocate additional resources to make up for the project delay." },
+            { jp: "この件に関しては、私の裁量で決定させていただきます。", en: "I will make a decision on this matter at my discretion." },
+            { jp: "相互理解を深めるために、直接お話ししたいと考えています。", en: "I'd like to talk in person to foster a better mutual understanding." },
+            { jp: "まずは共通の目標を確認することから始めましょう。", en: "Let's start by establishing our common ground." },
+            { jp: "その価格設定は、現在の市場価値に見合っていないと感じます。", en: "I feel that the pricing is not commensurate with the current market value." },
+            { jp: "長期的な視点に立って、このパートナーシップを構築したいです。", en: "I want to build this partnership from a long-term perspective." },
+            { jp: "前向きにご検討いただければ幸いです。", en: "I would appreciate it if you could give this your favorable consideration." },
+            { jp: "結論を出す前に、リスク要因を徹底的に分析しましょう。", en: "Let's conduct a thorough analysis of the risk factors before reaching a conclusion." },
+            { jp: "本日は貴重なお時間をいただき、ありがとうございました。", en: "Thank you very much for taking the time to meet with us today." }
         ],
         meeting: [
-            { jp: "電波の状況が悪く、音声が途切れてしまいました。", en: "The connection was unstable and your audio cut out.", ex: "cut out は「音が途切れる」。" },
-            { jp: "持ち帰って検討し、明日お返事します。", en: "I'll take that back, look into it, and get back to you tomorrow.", ex: "take back は「社内に持ち帰る」。" },
-            { jp: "本題に入る前に、まずは自己紹介をしましょう。", en: "Before we dive in, let's start with a round of introductions.", ex: "dive in は「議論に深く入る」。" },
-            { jp: "結論を言えば、予算を20%削減する必要があります。", en: "The bottom line is that we need to cut the budget by 20%.", ex: "The bottom line is は「要するに」。" },
-            { jp: "今の発言をもう一度詳しく説明していただけますか？", en: "Could you elaborate on what you just said?", ex: "elaborate は「詳細を述べる」。" },
-            { jp: "画面を共有しますので、少々お待ちください。", en: "I'm going to share my screen, so please bear with me for a moment.", ex: "bear with me は「少々お待ちください（我慢してください）」。" },
-            { jp: "すみません、途中で口を挟んでもよろしいでしょうか？", en: "Sorry, may I jump in for a second?", ex: "jump in で「会話に加わる/割り込む」。" },
-            { jp: "あなたがミュートになっているようです。", en: "I think you're on mute.", ex: "Web会議の定番。" },
-            { jp: "チャット欄にリンクを貼りました。", en: "I've posted the link in the chat box.", ex: "post in the chat box で「チャットに投稿する」。" },
-            { jp: "もう一度言っていただいてもいいですか？", en: "Could you say that again? You're breaking up.", ex: "breaking up も「音声が途切れている」時に使う。" },
-            { jp: "今日の議題は3つあります。", en: "We have three items on the agenda today.", ex: "on the agenda で「議題に上がって」。" },
-            { jp: "時間を守るために次に進みましょう。", en: "In the interest of time, let's move on to the next topic.", ex: "In the interest of time は「時間を節約するために」。" },
-            { jp: "それについては後で詳しくメールします。", en: "I'll follow up with an email regarding that later.", ex: "follow up は「後追いをする」。" },
-            { jp: "誰か意見や質問はありますか？", en: "Does anyone have any input or questions?", ex: "input は「意見/助言」の意味。" },
-            { jp: "そろそろ時間ですので、ここで切り上げましょう。", en: "It's about time, so let's wrap it up here.", ex: "wrap up は「終える/まとめる」。" },
-            { jp: "後ほど、議事録を皆様に共有します。", en: "I will circulate the meeting minutes later.", ex: "circulate は「（資料などを）配布・回覧する」。" },
-            { jp: "これまでの議論を要約していただけますか？", en: "Could you summarize the discussion so far?", ex: "summarize は「要約する」。" },
-            { jp: "その点については、後ほど議論することにしましょう。", en: "Let's touch on that point later in the meeting.", ex: "touch on で「（軽く）触れる、議論する」。" },
-            { jp: "誰がこのアクションプランの担当になりますか？", en: "Who will be taking ownership of this action plan?", ex: "take ownership で「主体的に取り組む、責任を持つ」。" },
-            { jp: "すみません、今の質問は私に対してでしょうか？", en: "Sorry, was that question directed at me?", ex: "directed at で「〜に向けられた」。" }
+            { jp: "画面が共有されているか確認いただけますか？", en: "Could you confirm if my screen is being shared correctly?" },
+            { jp: "恐れ入りますが、少しお声が遠いようです。", en: "I'm afraid your voice is a bit faint. Could you speak up?" },
+            { jp: "今の発言について、もう少し詳しく説明していただけますか？", en: "Could you elaborate on what you just said?" },
+            { jp: "時間が限られているので、次の議題に移りましょう。", en: "Since our time is limited, let's move on to the next item on the agenda." },
+            { jp: "本日の議論の要点をまとめさせていただきます。", en: "Let me summarize the key points of our discussion today." },
+            { jp: "今のところ、皆さんの意見は一致しているようですね。", en: "It seems that we are all on the same page for now." },
+            { jp: "これまでの話を整理するために、一度確認させてください。", en: "Let me double-check to make sure I've got everything straight so far." },
+            { jp: "電波の状況が悪く、先ほどの内容が聞き取れませんでした。", en: "The connection was poor, and I couldn't catch what you just said." },
+            { jp: "後ほど、議事録と関連資料をメールで送付いたします。", en: "I will send the meeting minutes and relevant documents via email later." },
+            { jp: "質問や懸念事項があれば、遠慮なくおっしゃってください。", en: "Please feel free to voice any questions or concerns you may have." },
+            { jp: "どなたか、この点について補足はありますか？", en: "Does anyone have anything to add regarding this point?" },
+            { jp: "このプロジェクトのタイムラインを再確認しましょう。", en: "Let's revisit the timeline for this project." },
+            { jp: "あなたの意見は理解できますが、別の視点も考慮すべきです。", en: "I see your point, but we should also consider another perspective." },
+            { jp: "具体的な数値データに基づいて議論を進めましょう。", en: "Let's proceed with the discussion based on specific numerical data." },
+            { jp: "一旦この議論を保留にして、次に進んでもよろしいでしょうか？", en: "Would you mind if we put this discussion on hold and move forward?" },
+            { jp: "次回の会議までに、各自の役割を明確にしておきましょう。", en: "Let's clarify our respective roles by the next meeting." },
+            { jp: "技術的なトラブルで開始が遅れたことをお詫びします。", en: "I apologize for the delay due to technical difficulties." },
+            { jp: "その質問については、担当部署に確認した上で回答いたします。", en: "I will get back to you on that question after consulting with the relevant department." },
+            { jp: "皆さんの建設的な意見に感謝いたします。", en: "I appreciate all of your constructive feedback." },
+            { jp: "今日は非常に有意義な議論ができたと思います。", en: "I believe we had a very productive discussion today." },
+            { jp: "発言される際は、マイクのミュートを解除してください。", en: "Please unmute your microphone when you wish to speak." },
+            { jp: "挙手機能を使って質問をしていただけますか？", en: "Could you use the 'raise hand' feature to ask a question?" },
+            { jp: "議論が本筋から逸れているようです。戻しましょう。", en: "It seems we're getting off track. Let's get back to the main point." },
+            { jp: "最終決定を下す前に、現場の意見を聞く必要があります。", en: "We need to hear from the frontline staff before making a final decision." },
+            { jp: "本日の会議はこれにて終了とさせていただきます。", en: "I'd like to wrap up today's meeting now." }
         ],
         daily: [
-            { jp: "飯田橋駅から東京駅は、中央線に乗り換えます。", en: "To get to Tokyo Station, transfer to the Chuo Line.", ex: "transfer to は「乗り換える」。" },
-            { jp: "人は病気になるまで健康を当たり前だと思っている。", en: "People take their health for granted until they get sick.", ex: "take for granted は「当たり前だと思う」。" },
-            { jp: "昨日は一晩中、激しく雨が降っていました。", en: "It was raining cats and dogs all night long.", ex: "raining cats and dogs は「土砂降り」。" },
-            { jp: "彼は私の冗談を真に受けて、怒ってしまいました。", en: "He took my joke to heart and got angry.", ex: "take to heart は「真に受ける」。" },
-            { jp: "久しぶりに地元の友達に会えて楽しかったです。", en: "It was great catching up with my old friends.", ex: "catch up with で「久しぶりに近況を話し合う」。" },
-            { jp: "今の仕事にすっかり慣れましたか？", en: "Have you fully settled into your new job yet?", ex: "settle into は「馴染む/落ち着く」。" },
-            { jp: "あいにく、その日は予定が入っています。", en: "Unfortunately, I'm tied up that day.", ex: "be tied up で「忙しくて手が離せない」。" },
-            { jp: "彼は私の期待を裏切ったことがありません。", en: "He has never let me down.", ex: "let someone down は「人をがっかりさせる」。" },
-            { jp: "どういたしまして。いつでも言ってください。", en: "Don't mention it. Any time.", ex: "Don't mention it は「礼には及ばない」。" },
-            { jp: "今日は一日中、体がだるいです。", en: "I've been feeling sluggish all day today.", ex: "sluggish は「体が重い、だるい」。" },
-            { jp: "それは一石二鳥ですね。", en: "That's killing two birds with one stone.", ex: "定番のイディオム。" },
-            { jp: "彼はいつも他人の悪口を言っています。", en: "He is always speaking ill of others.", ex: "speak ill of で「悪口を言う」。" },
-            { jp: "今のところ、すべて順調です。", en: "So far, so good.", ex: "「今のところ順調」という決まり文句。" },
-            { jp: "その映画は本当に感動的でした。", en: "That movie was truly touching.", ex: "touching は「感動的な」。" },
-            { jp: "お名前を伺ってもよろしいですか？", en: "May I have your name, please?", ex: "丁寧な名前の聞き方。" },
-            { jp: "そんなに自分を責めないで。", en: "Don't be so hard on yourself.", ex: "落ち込んでいる人を励ます言葉。" },
-            { jp: "もう少し時間をかけて考えさせてください。", en: "Let me sleep on it.", ex: "sleep on it は「一晩寝て考える（翌日まで待つ）」。" },
-            { jp: "偶然、駅で彼女を見かけました。", en: "I happened to see her at the station.", ex: "happen to do で「たまたま〜する」。" },
-            { jp: "彼はいつも締め切りギリギリに行動します。", en: "He always does things at the last minute.", ex: "at the last minute は「土壇場で、ギリギリに」。" },
-            { jp: "念のため、もう一度確認させてください。", en: "Let me check one more time just in case.", ex: "just in case は「念のため、万が一に備えて」。" }
+            { jp: "この路線のラッシュアワーは非常に混雑し、しばしば遅延が発生します。", en: "The rush hour on this line is extremely crowded, and delays occur frequently." },
+            { jp: "最近、仕事とプライベートの両立に苦労しています。", en: "I've been struggling to maintain a work-life balance lately." },
+            { jp: "彼の冗談はいつも少し皮肉が効いていて、好みが分かれます。", en: "His jokes are always a bit sarcastic, so they're not for everyone." },
+            { jp: "この小説の結末は、私の予想を完全に裏切るものでした。", en: "The ending of this novel completely defied my expectations." },
+            { jp: "環境への影響を考えて、プラスチックの使用を控えています。", en: "I'm cutting down on plastic use to reduce my environmental impact." },
+            { jp: "彼女のプレゼンテーションは、聴衆を惹きつける魅力がありました。", en: "Her presentation had the power to captivate the audience." },
+            { jp: "慣れない土地での生活は、最初は戸惑うことも多かったです。", en: "Living in an unfamiliar place was quite overwhelming at first." },
+            { jp: "健康維持のために、毎朝のジョギングを習慣にしています。", en: "I make it a rule to go jogging every morning to stay in shape." },
+            { jp: "そのニュースを聞いたとき、自分の耳を疑いました。", en: "I couldn't believe my ears when I heard the news." },
+            { jp: "週末は家でゆっくりして、溜まった疲れを癒したいです。", en: "I want to relax at home this weekend and recharge my batteries." },
+            { jp: "彼は非常に謙虚な人で、自分の功績をひけらかしません。", en: "He is a very humble person and doesn't boast about his achievements." },
+            { jp: "この街の雰囲気は、どことなく懐かしい感じがします。", en: "The atmosphere of this town feels somewhat nostalgic." },
+            { jp: "誤解を招くような表現を避けるように注意しています。", en: "I'm careful to avoid expressions that could lead to misunderstandings." },
+            { jp: "あいにく、その日はすでに予定が入っております。", en: "Unfortunately, I'm already tied up on that day." },
+            { jp: "期待していただけに、結果には少しがっかりしました。", en: "I was a bit disappointed with the result, especially since I had high hopes." },
+            { jp: "彼女は多才で、仕事だけでなく語学や楽器も堪能です。", en: "She is versatile and proficient in languages and music, as well as her work." },
+            { jp: "最近の物価高騰は、家計に大きな打撃を与えています。", en: "The recent surge in prices is dealing a heavy blow to household finances." },
+            { jp: "何事も経験だと思って、新しいことに挑戦し続けたいです。", en: "I want to keep trying new things, believing that everything is a learning experience." },
+            { jp: "彼は約束を必ず守る、非常に信頼できる人物です。", en: "He is a highly reliable person who always keeps his word." },
+            { jp: "言葉の壁を感じることもありますが、コミュニケーションを大切にしています。", en: "I sometimes feel a language barrier, but I value communication." },
+            { jp: "無理をせず、自分のペースで進めることが大切です。", en: "It's important not to overdo it and to proceed at your own pace." },
+            { jp: "予期せぬトラブルが発生しましたが、何とか解決できました。", en: "An unexpected problem arose, but we managed to resolve it somehow." },
+            { jp: "この映画は、現代社会の問題を鋭く風刺しています。", en: "This movie is a sharp satire on the problems of modern society." },
+            { jp: "彼女のアドバイスのおかげで、自信を取り戻すことができました。", en: "Thanks to her advice, I was able to regain my confidence." },
+            { jp: "人生には、時には立ち止まって考える時間も必要です。", en: "In life, sometimes you need time to stop and reflect." }
         ],
         news: [
-            { jp: "低賃金や労働の過酷さから介護の担い手が不足している。", en: "There is a shortage of caregivers due to low wages and harsh working conditions.", ex: "harsh working conditions は「過酷な労働環境」。" },
-            { jp: "地方のインフラが老朽化している。", en: "Infrastructure in rural areas is becoming obsolete and aging.", ex: "obsolete は「廃れた、旧式の」。" },
-            { jp: "AIの進化により、エンジニアのレイオフも始まっている。", en: "With the advancement of AI, layoffs of engineers have already started.", ex: "layoff は「一時解雇」。" },
-            { jp: "AIに代替されない職業としてブルーカラーの人気も高まっている。", en: "Blue-collar jobs are gaining popularity as professions less likely to be replaced by AI.", ex: "replaced by AI で「AIに取って代わられる」。" },
-            { jp: "社会の二極化は、民主主義に対する重大な脅威です。", en: "The polarization of society has become a significant threat to democracy.", ex: "polarization は「二極化、分断」。" },
-            { jp: "多くの国が温室効果ガスの排出量を削減するために規制を導入した。", en: "Many countries introduced regulations to curb greenhouse gas emissions.", ex: "curb は「抑制する」。" },
-            { jp: "世界経済はインフレの影響で不透明な状況が続いています。", en: "The global economy remains uncertain due to the impact of inflation.", ex: "uncertain は「不透明な」。" },
-            { jp: "その技術革新は、医療を根底から変える可能性があります。", en: "That innovation has the potential to revolutionize healthcare.", ex: "revolutionize は「〜に革命を起こす」。" },
-            { jp: "政府は少子高齢化対策を検討している。", en: "The government is considering measures to address the shrinking and aging population.", ex: "address は「（課題に）取り組む」。" },
-            { jp: "持続可能な開発目標（SDGs）は世界共通の課題です。", en: "The SDGs are common global issues to be addressed.", ex: "SDGs は Sustainable Development Goals。" },
-            { jp: "再生可能エネルギーへの転換が急務となっています。", en: "Transitioning to renewable energy has become an urgent task.", ex: "urgent task で「急務」。" },
-            { jp: "デジタル格差が新たな社会問題となっています。", en: "The digital divide is becoming a new social issue.", ex: "digital divide は「情報の格差」。" },
-            { jp: "その国は深刻な経済危機に直面しています。", en: "The country is facing a severe economic crisis.", ex: "facing a crisis で「危機に直面する」。" },
-            { jp: "プライバシー保護と利便性のバランスが求められている。", en: "A balance between privacy protection and convenience is required.", ex: "balance between A and B。" },
-            { jp: "仮想通貨の市場は非常に変動が激しいです。", en: "The cryptocurrency market is highly volatile.", ex: "volatile は「変動しやすい」。" },
-            { jp: "ワークライフバランスの重要性が再認識されている。", en: "The importance of work-life balance is being recognized again.", ex: "recognize は「認識する」。" },
-            { jp: "食料自給率の向上が求められています。", en: "Improvement of the food self-sufficiency rate is required.", ex: "food self-sufficiency rate は「食料自給率」。" },
-            { jp: "サプライチェーンの混乱が製品価格を押し上げている。", en: "Supply chain disruptions are driving up product prices.", ex: "disruptions は「混乱」。" },
-            { jp: "最低賃金の引き上げが全国で議論されています。", en: "Increasing the minimum wage is being discussed nationwide.", ex: "minimum wage は「最低賃金」。" },
-            { jp: "少子化が労働力不足に拍車をかけています。", en: "The declining birthrate is accelerating the labor shortage.", ex: "accelerate で「加速させる」。" }
+            { jp: "社会の二極化は、民主主義の安定に対する重大な脅威となっています。", en: "The polarization of society has become a significant threat to the stability of democracy." },
+            { jp: "急速なAIの進歩は、雇用市場に大きな変化をもたらすと予想されます。", en: "Rapid advancements in AI are expected to bring about major changes in the job market." },
+            { jp: "政府は経済成長を促すために、大胆な規制緩和を実施しました。", en: "The government implemented bold deregulation to stimulate economic growth." },
+            { jp: "気候変動対策は、もはや待ったなしの状況にあります。", en: "Taking action against climate change is no longer something that can wait." },
+            { jp: "その多国籍企業は、不透明な取引を指摘され厳しい批判を浴びています。", en: "The multinational corporation is facing harsh criticism for its opaque transactions." },
+            { jp: "少子高齢化問題への対策は、国家の最優先課題の一つです。", en: "Countering the declining birthrate and aging population is one of the nation's top priorities." },
+            { jp: "デジタル格差の拡大が、教育や情報の不平等を生んでいます。", en: "The widening digital divide is creating inequality in education and information." },
+            { jp: "中央銀行はインフレを抑制するため、追加の利上げを検討しています。", en: "The central bank is considering further interest rate hikes to curb inflation." },
+            { jp: "再生可能エネルギーへの転換は、持続可能な社会のために不可欠です。", en: "The shift to renewable energy is essential for a sustainable society." },
+            { jp: "今回の不祥事により、その団体の信頼は失墜しました。", en: "This scandal has resulted in a loss of credibility for the organization." },
+            { jp: "情報の信憑性を見極めるためのメディアリテラシーが求められています。", en: "Media literacy is required to discern the credibility of information." },
+            { jp: "新しい貿易協定の発効により、輸出の拡大が期待されています。", en: "The entry into force of the new trade agreement is expected to boost exports." },
+            { jp: "プライバシーの保護と利便性のバランスが、常に議論の的となっています。", en: "The balance between privacy protection and convenience is always a subject of debate." },
+            { jp: "その国は深刻な人道危機に直面しており、国際的な支援が必要です。", en: "The country is facing a severe humanitarian crisis and needs international aid." },
+            { jp: "ワークスタイルの多様化により、オフィスの在り方が見直されています。", en: "The diversification of work styles is prompting a rethink of the role of the office." },
+            { jp: "仮想通貨市場は高いボラティリティを伴い、投資家は注意が必要です。", en: "The cryptocurrency market involves high volatility, and investors should be cautious." },
+            { jp: "医療技術の向上により、かつては不治とされた病の治療が可能になりました。", en: "Advances in medical technology have made it possible to treat diseases once deemed incurable." },
+            { jp: "食料安全保障を確保するために、自給率の向上が急務となっています。", en: "To ensure food security, improving self-sufficiency is an urgent task." },
+            { jp: "その法案は議会で激しい議論の末、僅差で可決されました。", en: "The bill was passed by a narrow margin after heated debate in parliament." },
+            { jp: "サプライチェーンの脆弱性が浮き彫りになり、対策が急がれています。", en: "The vulnerability of supply chains has been highlighted, and measures are urgently needed." },
+            { jp: "宇宙開発の分野において、民間企業の参入が加速しています。", en: "The entry of private companies into the field of space exploration is accelerating." },
+            { jp: "メンタルヘルスの重要性が広く認識され、サポート体制が整いつつあります。", en: "The importance of mental health is widely recognized, and support systems are being established." },
+            { jp: "文化の多様性を尊重することは、国際社会において極めて重要です。", en: "Respecting cultural diversity is extremely important in the international community." },
+            { jp: "サイバーセキュリティ対策を強化することは、企業にとって避けて通れません。", en: "Strengthening cybersecurity measures is unavoidable for businesses." },
+            { jp: "未来の世代のために、資源を大切に使い、自然を守らなければなりません。", en: "For the sake of future generations, we must use resources wisely and protect nature." }
         ]
     };
 
     const categoryNames = {
-        business: "💼 職場での会話",
-        meeting: "🌐 Web会議",
-        daily: "🏠 日常生活",
-        news: "📈 時事・トレンド"
+        business: "💼 ビジネス (交渉・戦略)",
+        meeting: "🌐 Web会議 (進行・議論)",
+        daily: "🏠 日常生活 (状況・感情)",
+        news: "📈 時事ニュース (社会・経済)"
     };
 
     let currentQueue = [];
@@ -359,21 +358,14 @@
     let totalAttempts = 0;
     let correctCount = 0;
     let audioEnabled = false;
-    let isAnswerShown = false;
-    let isJudged = false;
 
     const japaneseEl = document.getElementById('japanese-text');
     const englishEl = document.getElementById('english-text');
-    const explanationBox = document.getElementById('explanation-box');
-    const explanationContent = document.getElementById('explanation-content');
+    const controlsEl = document.getElementById('game-controls');
     const statRem = document.getElementById('stat-remaining');
     const statCor = document.getElementById('stat-correct');
     const categoryHeader = document.getElementById('current-category-name');
-    
-    const btnCorrect = document.getElementById('btn-correct');
-    const btnWrong = document.getElementById('btn-wrong');
-    const btnNext = document.getElementById('btn-next');
-    
+
     const synth = window.speechSynthesis;
 
     function startGame(category) {
@@ -381,10 +373,11 @@
         categoryHeader.innerText = categoryNames[category];
         audioEnabled = true;
         
+        // 問題を完全にシャッフルしてキューを作成
         currentQueue = [...questionBank[category]].sort(() => Math.random() - 0.5);
+        
         totalAttempts = 0;
         correctCount = 0;
-        
         nextQuestion();
     }
 
@@ -397,27 +390,17 @@
         currentQuestion = currentQueue[0];
         japaneseEl.innerText = currentQuestion.jp;
         englishEl.innerText = currentQuestion.en;
-        explanationContent.innerHTML = currentQuestion.ex || "解説を準備中...";
-        
         englishEl.style.display = 'none';
-        explanationBox.style.display = 'none';
-        btnCorrect.style.display = 'none';
-        btnWrong.style.display = 'none';
-        btnNext.style.display = 'none';
-        
-        isAnswerShown = false;
-        isJudged = false;
+        controlsEl.style.visibility = 'hidden';
         
         updateStats();
     }
 
     function showAnswer() {
-        if (isAnswerShown) return;
+        if (!currentQuestion || englishEl.style.display === 'block') return;
         
-        isAnswerShown = true;
         englishEl.style.display = 'block';
-        btnCorrect.style.display = 'block';
-        btnWrong.style.display = 'block';
+        controlsEl.style.visibility = 'visible';
         
         if (audioEnabled) {
             const utter = new SpeechSynthesisUtterance(currentQuestion.en);
@@ -428,25 +411,17 @@
         }
     }
 
-    function judge(isCorrect) {
-        if (isJudged) return;
-        isJudged = true;
-
+    function handleResult(isCorrect) {
         totalAttempts++;
         if (isCorrect) {
             correctCount++;
             currentQueue.shift();
         } else {
+            // 間違えた場合は最後尾に回して再出題
             const wrongItem = currentQueue.shift();
             currentQueue.push(wrongItem);
         }
-
-        explanationBox.style.display = 'block';
-        btnCorrect.style.display = 'none';
-        btnWrong.style.display = 'none';
-        btnNext.style.display = 'block';
-        
-        updateStats();
+        nextQuestion();
     }
 
     function updateStats() {
@@ -456,11 +431,19 @@
 
     function finishGame() {
         const resultScreen = document.getElementById('result-screen');
+        const finalRate = document.getElementById('final-rate');
+        const finalStats = document.getElementById('final-stats');
+        const feedback = document.getElementById('feedback-msg');
+
         resultScreen.style.display = 'flex';
         
         const rate = totalAttempts === 0 ? 0 : Math.round((correctCount / totalAttempts) * 100);
-        document.getElementById('final-rate').innerText = rate + "%";
-        document.getElementById('final-stats').innerText = `回答数: ${totalAttempts} / 正解数: ${correctCount}`;
+        finalRate.innerText = rate + "%";
+        finalStats.innerText = `試行回数: ${totalAttempts} / 正解: ${correctCount}`;
+
+        if (rate >= 90) feedback.innerText = "驚異的なマスター率です！実戦でも自信を持って使えます。";
+        else if (rate >= 75) feedback.innerText = "素晴らしい！中級の壁を突破しつつあります。";
+        else feedback.innerText = "手応えのあるフレーズばかりです。繰り返し挑戦しましょう！";
     }
 </script>
 </body>

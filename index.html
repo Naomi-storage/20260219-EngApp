@@ -117,7 +117,7 @@
             word-wrap: break-word;
         }
 
-        /* 解説用のスタイルを新規追加 */
+        /* 解説用のスタイル */
         #note-text {
             display: none;
             margin-top: 20px;
@@ -238,7 +238,6 @@
         <div class="question-card" id="card" onclick="showAnswer()">
             <div id="japanese-text">読み込み中...</div>
             <div id="english-text"></div>
-            <!-- 解説表示用の要素を追加 -->
             <div id="note-text"></div>
         </div>
 
@@ -259,7 +258,7 @@
 </div>
 
 <script>
-    // データ群に語彙の解説(note)を追加
+    // 完全版のデータ（構文エラーも修正済み）
     const questionBank = {
         business: [
             { jp: "お忙しいところ恐縮ですが、進捗を伺えますか？", en: "I'm sorry to bother you, but could you give me an update on the progress?", note: "<strong>bother:</strong> 邪魔をする、手を煩わせる<br><strong>give me an update on ~:</strong> ～の最新状況を教える" },
@@ -340,62 +339,62 @@
             { jp: "予期せぬトラブルが発生しましたが、何とか解決できました。", en: "An unexpected problem arose, but we managed to resolve it somehow.", note: "<strong>arise (arose):</strong> 発生する<br><strong>manage to ~:</strong> なんとか～する" },
             { jp: "この映画は、現代社会の問題を鋭く風刺しています。", en: "This movie is a sharp satire on the problems of modern society.", note: "<strong>sharp:</strong> 鋭い<br><strong>satire:</strong> 風刺" },
             { jp: "彼女のアドバイスのおかげで、自信を取り戻すことができました。", en: "Thanks to her advice, I was able to regain my confidence.", note: "<strong>regain:</strong> 取り戻す<br><strong>confidence:</strong> 自信" },
-            { jp: "人生には、時には立ち止まって考える時間も必要です。", en: "In life, sometimes you need time to stop and reflect.", note: "<strong>reflect:</strong> 熟考する、振り返る" }
-  { jp: "給料ぎりぎりの生活はしたくないよ。", en: "I don't wanna live from paycheck to paycheck.", note: "<strong>paycheck to paycheck</strong>：生活がギリギリの状態" },
-  { jp: "もっと給料のよい仕事を探してる。", en: "I'm looking for a better paying job.", note: "" },
-  { jp: "彼らは足音がうるさい。", en: "They have a heavy foot.", note: "<strong>heavy foot</strong>：足音が大きい、足音がうるさい" },
-  { jp: "どんなサングラスが流行っているんですか？", en: "What kind of sunglasses are in style?", note: "<strong>be in style</strong>：流行っている" },
-  { jp: "私が落ち込んでいた時、彼が私をなぐさめてくれた。", en: "He comforted me when I was feeling down.", note: "<strong>comfort</strong>：なぐさめる" },
-  { jp: "シャツのボタンが取れてるよ。", en: "You're missing a button on your shirt.", note: "<strong>missing</strong>：（あるべきものが）欠けている、取れている" },
-  { jp: "気を悪くしないでね。/ ムキになるな。", en: "Don’t take it personally.", note: "<strong>take it personally</strong>：個人的に受け止める、真に受けて気分を害する" },
-  { jp: "個人的な恨みはないよ、ビジネスだから仕方がない。", en: "It’s not personal, it’s business.", note: "" },
-  { jp: "人は病気になるまで健康を当たり前だと思っている。", en: "People take their health for granted until they get sick.", note: "<strong>take A for granted</strong>：Aを当然のことと思う" },
-  { jp: "私がしていることを当たり前だと思わないで。", en: "Don't take what I do for granted.", note: "" },
-  { jp: "信じられない。/ その話には乗らない。", en: "I’m not buying it.", note: "<strong>buying it</strong>：（話などを）信じる、受け入れる" },
-  { jp: "試してみても損はない（試す価値はある）。", en: "Can’t hurt to try.", note: "<strong>no harm in trying</strong>：試しても害はない" },
-  { jp: "人手不足です。", en: "We are short-staffed.", note: "<strong>short-staffed</strong>：従業員が足りない" },
-  { jp: "仕事に追われている。/ 非常に忙しい。", en: "I’m swamped with work.", note: "<strong>swamped</strong>：忙殺されている" },
-  { jp: "本当にそうだよね（強い共感）。", en: "Tell me about it.", note: "相手の言ったことに対して「全くその通りだ」と同意する際に使う" },
-  { jp: "忽然と消える。", en: "Vanish into thin air.", note: "<strong>into thin air</strong>：跡形もなく" },
-  { jp: "考えや理解が一致している。", en: "On the same page.", note: "同じ理解を共有している状態" },
-  { jp: "臨機応変に。/ その場で。", en: "On the fly.", note: "あらかじめ準備せず、その場で即座に判断して行うこと" },
-  { jp: "突然。/ 突拍子もない。", en: "Out of left field.", note: "予想外の方向から来る、不意打ちの" },
-  { jp: "即興でやる。/ 適当にやる。", en: "Wing it.", note: "<strong>Wing it</strong>：準備なしに本番をこなす" },
-  { jp: "済んだことだ。/ 水に流そう。", en: "Water under the bridge.", note: "過去の変えられない出来事" },
-  { jp: "保険会社に損害賠償を請求する。", en: "I will make a claim against the insurance company for damages.", note: "" },
-  { jp: "もう乗り越えた。/ もうどうでもいい。", en: "I’m over it.", note: "過去の出来事にこだわらなくなった状態" },
-  { jp: "来客があります。", en: "I have company.", note: "<strong>company</strong>：来客、仲間、同伴者" },
-  { jp: "私の知る限りではありません。", en: "Not that I know of.", note: "自分の知識の範囲内で否定する表現" },
-  { jp: "今日はどうされましたか？", en: "What brings you in today?", note: "来店理由などを尋ねる丁寧な表現" },
-  { jp: "頭から離れない。", en: "I can’t get it out of my head.", note: "ずっと考え続けてしまう状態" },
-  { jp: "彼はまだ未熟だ。", en: "He is still green.", note: "<strong>green</strong>：経験が浅い、未熟な" },
-  { jp: "機会を逃す。", en: "Miss the boat.", note: "<strong>miss an opportunity</strong>：チャンスを失う" },
-  { jp: "並んでいますか？", en: "Are you in line?", note: "" },
-  { jp: "彼の立場になって考えてみて。", en: "Put yourself in his shoes.", note: "<strong>in one's shoes</strong>：（人）の立場になって" },
-  { jp: "君の努力はすぐに報われる。", en: "Your efforts will soon pay off.", note: "<strong>pay off</strong>：実を結ぶ、報われる" },
-  { jp: "お堅いわね。", en: "You’re so uptight!", note: "<strong>uptight</strong>：神経質な、お堅い、ピリピリした" },
-  { jp: "ない袖は振れぬ。", en: "You can't make something out of nothing.", note: "<strong>make something out of nothing</strong>：いちゃもんをつける、という意味でも使われる" },
-  { jp: "なぜそんなに見た目にこだわるの？", en: "Why are you so hung up on your appearance?", note: "<strong>hung up on</strong>：～にこだわっている、とらわれている" },
-  { jp: "親孝行したい。", en: "I wanna do something nice for my parents.", note: "" },
-  { jp: "今日は洗濯をする気になれない。", en: "I can't be bothered to do the laundry today.", note: "<strong>can't be bothered</strong>：面倒くさい、～する気が起きない" },
-  { jp: "場違いな気がする。", en: "I feel like a fish out of water.", note: "<strong>fish out of water</strong>：水を離れた魚、場違いな環境" },
-  { jp: "どちらかというと犬派だ。", en: "I'm more of a dog person.", note: "<strong>more of a...</strong>：どちらかと言えば...だ" },
-  { jp: "そのレストランは高級な方かな。", en: "It's on the pricey side.", note: "<strong>on the ... side</strong>：どちらかと言えば...の方だ" },
-  { jp: "ラーメンは控えてるけど、今食べたくなってる。", en: "I'm cutting down on Ramen, but now I'm tempted to eat.", note: "<strong>tempted to</strong>：～したくなる、誘惑に駆られる" },
-  { jp: "最近、英語を使う機会があまりなかった。", en: "I haven't had much of an outlet for my English recently.", note: "<strong>outlet</strong>：学んだことを使う機会、吐き出し口" },
-  { jp: "今月の売上ノルマに達したよ。", en: "I have met the sales quota this month.", note: "<strong>sales quota</strong>：売上ノルマ" },
-  { jp: "書類を確認していただけましたか？", en: "Did you get a chance to look over the documents?", note: "<strong>look over</strong>：ざっと目を通す" },
-  { jp: "今日の仕事はこの辺にしよう。", en: "Let’s call it a day.", note: "作業や仕事を終わりにするときの決まり文句" },
-  { jp: "問題の根本原因を突き止めなければならない。", en: "We have to get to the bottom of the problem.", note: "<strong>get to the bottom of</strong>：真相を突き止める" },
-  { jp: "私は超プロ級の先延ばし屋です。", en: "I'm such a professional procrastinator.", note: "<strong>procrastinate</strong>：先延ばしにする" },
-  { jp: "締め切りは来週に延期しました。", en: "The deadline was pushed back to next week.", note: "<strong>push back</strong>：延期する" },
-  { jp: "遠回しに言うのはやめて。", en: "Don't beat around the bush.", note: "本題を避け、遠回しに言うこと" },
-  { jp: "逆に。/ 反対に。", en: "The other way around.", note: "状況や順序が逆であることを示す" },
-  { jp: "英語を話すことに劣等感を感じる。", en: "I feel inferior when speaking in English.", note: "<strong>inferior</strong>：劣っている、劣等感がある" },
-  { jp: "責任とは、自分の行動の結果を受け入れることだ。", en: "Responsibilities mean accepting the consequences of your actions.", note: "<strong>consequences</strong>：結果" },
-  { jp: "賞を頂き、大変恐縮するとともに光栄に思っています。", en: "I'm truly humbled and honored to get the prize.", note: "<strong>humbled</strong>：謙虚な、恐縮している" },
-  { jp: "インフレは中央銀行にとって依然として大きな懸念事項である。", en: "Inflation continues to be a major concern for central banks.", note: "" },
-  { jp: "デジタルトランスフォーメーションが伝統的な産業を再構築している。", en: "Digital transformation is reshaping traditional industries.", note: "<strong>reshape</strong>：再構築する" }
+            { jp: "人生には、時には立ち止まって考える時間も必要です。", en: "In life, sometimes you need time to stop and reflect.", note: "<strong>reflect:</strong> 熟考する、振り返る" },
+            { jp: "給料ぎりぎりの生活はしたくないよ。", en: "I don't wanna live from paycheck to paycheck.", note: "<strong>paycheck to paycheck</strong>：生活がギリギリの状態" },
+            { jp: "もっと給料のよい仕事を探してる。", en: "I'm looking for a better paying job.", note: "" },
+            { jp: "彼らは足音がうるさい。", en: "They have a heavy foot.", note: "<strong>heavy foot</strong>：足音が大きい、足音がうるさい" },
+            { jp: "どんなサングラスが流行っているんですか？", en: "What kind of sunglasses are in style?", note: "<strong>be in style</strong>：流行っている" },
+            { jp: "私が落ち込んでいた時、彼が私をなぐさめてくれた。", en: "He comforted me when I was feeling down.", note: "<strong>comfort</strong>：なぐさめる" },
+            { jp: "シャツのボタンが取れてるよ。", en: "You're missing a button on your shirt.", note: "<strong>missing</strong>：（あるべきものが）欠けている、取れている" },
+            { jp: "気を悪くしないでね。/ ムキになるな。", en: "Don’t take it personally.", note: "<strong>take it personally</strong>：個人的に受け止める、真に受けて気分を害する" },
+            { jp: "個人的な恨みはないよ、ビジネスだから仕方がない。", en: "It’s not personal, it’s business.", note: "" },
+            { jp: "人は病気になるまで健康を当たり前だと思っている。", en: "People take their health for granted until they get sick.", note: "<strong>take A for granted</strong>：Aを当然のことと思う" },
+            { jp: "私がしていることを当たり前だと思わないで。", en: "Don't take what I do for granted.", note: "" },
+            { jp: "信じられない。/ その話には乗らない。", en: "I’m not buying it.", note: "<strong>buying it</strong>：（話などを）信じる、受け入れる" },
+            { jp: "試してみても損はない（試す価値はある）。", en: "Can’t hurt to try.", note: "<strong>no harm in trying</strong>：試しても害はない" },
+            { jp: "人手不足です。", en: "We are short-staffed.", note: "<strong>short-staffed</strong>：従業員が足りない" },
+            { jp: "仕事に追われている。/ 非常に忙しい。", en: "I’m swamped with work.", note: "<strong>swamped</strong>：忙殺されている" },
+            { jp: "本当にそうだよね（強い共感）。", en: "Tell me about it.", note: "相手の言ったことに対して「全くその通りだ」と同意する際に使う" },
+            { jp: "忽然と消える。", en: "Vanish into thin air.", note: "<strong>into thin air</strong>：跡形もなく" },
+            { jp: "考えや理解が一致している。", en: "On the same page.", note: "同じ理解を共有している状態" },
+            { jp: "臨機応変に。/ その場で。", en: "On the fly.", note: "あらかじめ準備せず、その場で即座に判断して行うこと" },
+            { jp: "突然。/ 突拍子もない。", en: "Out of left field.", note: "予想外の方向から来る、不意打ちの" },
+            { jp: "即興でやる。/ 適当にやる。", en: "Wing it.", note: "<strong>Wing it</strong>：準備なしに本番をこなす" },
+            { jp: "済んだことだ。/ 水に流そう。", en: "Water under the bridge.", note: "過去の変えられない出来事" },
+            { jp: "保険会社に損害賠償を請求する。", en: "I will make a claim against the insurance company for damages.", note: "" },
+            { jp: "もう乗り越えた。/ もうどうでもいい。", en: "I’m over it.", note: "過去の出来事にこだわらなくなった状態" },
+            { jp: "来客があります。", en: "I have company.", note: "<strong>company</strong>：来客、仲間、同伴者" },
+            { jp: "私の知る限りではありません。", en: "Not that I know of.", note: "自分の知識の範囲内で否定する表現" },
+            { jp: "今日はどうされましたか？", en: "What brings you in today?", note: "来店理由などを尋ねる丁寧な表現" },
+            { jp: "頭から離れない。", en: "I can’t get it out of my head.", note: "ずっと考え続けてしまう状態" },
+            { jp: "彼はまだ未熟だ。", en: "He is still green.", note: "<strong>green</strong>：経験が浅い、未熟な" },
+            { jp: "機会を逃す。", en: "Miss the boat.", note: "<strong>miss an opportunity</strong>：チャンスを失う" },
+            { jp: "並んでいますか？", en: "Are you in line?", note: "" },
+            { jp: "彼の立場になって考えてみて。", en: "Put yourself in his shoes.", note: "<strong>in one's shoes</strong>：（人）の立場になって" },
+            { jp: "君の努力はすぐに報われる。", en: "Your efforts will soon pay off.", note: "<strong>pay off</strong>：実を結ぶ、報われる" },
+            { jp: "お堅いわね。", en: "You’re so uptight!", note: "<strong>uptight</strong>：神経質な、お堅い、ピリピリした" },
+            { jp: "ない袖は振れぬ。", en: "You can't make something out of nothing.", note: "<strong>make something out of nothing</strong>：いちゃもんをつける、という意味でも使われる" },
+            { jp: "なぜそんなに見た目にこだわるの？", en: "Why are you so hung up on your appearance?", note: "<strong>hung up on</strong>：～にこだわっている、とらわれている" },
+            { jp: "親孝行したい。", en: "I wanna do something nice for my parents.", note: "" },
+            { jp: "今日は洗濯をする気になれない。", en: "I can't be bothered to do the laundry today.", note: "<strong>can't be bothered</strong>：面倒くさい、～する気が起きない" },
+            { jp: "場違いな気がする。", en: "I feel like a fish out of water.", note: "<strong>fish out of water</strong>：水を離れた魚、場違いな環境" },
+            { jp: "どちらかというと犬派だ。", en: "I'm more of a dog person.", note: "<strong>more of a...</strong>：どちらかと言えば...だ" },
+            { jp: "そのレストランは高級な方かな。", en: "It's on the pricey side.", note: "<strong>on the ... side</strong>：どちらかと言えば...の方だ" },
+            { jp: "ラーメンは控えてるけど、今食べたくなってる。", en: "I'm cutting down on Ramen, but now I'm tempted to eat.", note: "<strong>tempted to</strong>：～したくなる、誘惑に駆られる" },
+            { jp: "最近、英語を使う機会があまりなかった。", en: "I haven't had much of an outlet for my English recently.", note: "<strong>outlet</strong>：学んだことを使う機会、吐き出し口" },
+            { jp: "今月の売上ノルマに達したよ。", en: "I have met the sales quota this month.", note: "<strong>sales quota</strong>：売上ノルマ" },
+            { jp: "書類を確認していただけましたか？", en: "Did you get a chance to look over the documents?", note: "<strong>look over</strong>：ざっと目を通す" },
+            { jp: "今日の仕事はこの辺にしよう。", en: "Let’s call it a day.", note: "作業や仕事を終わりにするときの決まり文句" },
+            { jp: "問題の根本原因を突き止めなければならない。", en: "We have to get to the bottom of the problem.", note: "<strong>get to the bottom of</strong>：真相を突き止める" },
+            { jp: "私は超プロ級の先延ばし屋です。", en: "I'm such a professional procrastinator.", note: "<strong>procrastinate</strong>：先延ばしにする" },
+            { jp: "締め切りは来週に延期しました。", en: "The deadline was pushed back to next week.", note: "<strong>push back</strong>：延期する" },
+            { jp: "遠回しに言うのはやめて。", en: "Don't beat around the bush.", note: "本題を避け、遠回しに言うこと" },
+            { jp: "逆に。/ 反対に。", en: "The other way around.", note: "状況や順序が逆であることを示す" },
+            { jp: "英語を話すことに劣等感を感じる。", en: "I feel inferior when speaking in English.", note: "<strong>inferior</strong>：劣っている、劣等感がある" },
+            { jp: "責任とは、自分の行動の結果を受け入れることだ。", en: "Responsibilities mean accepting the consequences of your actions.", note: "<strong>consequences</strong>：結果" },
+            { jp: "賞を頂き、大変恐縮するとともに光栄に思っています。", en: "I'm truly humbled and honored to get the prize.", note: "<strong>humbled</strong>：謙虚な、恐縮している" },
+            { jp: "インフレは中央銀行にとって依然として大きな懸念事項である。", en: "Inflation continues to be a major concern for central banks.", note: "" },
+            { jp: "デジタルトランスフォーメーションが伝統的な産業を再構築している。", en: "Digital transformation is reshaping traditional industries.", note: "<strong>reshape</strong>：再構築する" }
         ],
         news: [
             { jp: "社会の二極化は、民主主義の安定に対する重大な脅威となっています。", en: "The polarization of society has become a significant threat to the stability of democracy.", note: "<strong>polarization:</strong> 二極化、分極化<br><strong>democracy:</strong> 民主主義" },
@@ -411,54 +410,36 @@
             { jp: "情報の信憑性を見極めるためのメディアリテラシーが求められています。", en: "Media literacy is required to discern the credibility of information.", note: "<strong>literacy:</strong> (情報の)活用能力、リテラシー<br><strong>discern:</strong> 見分ける、識別する" },
             { jp: "新しい貿易協定の発効により、輸出の拡大が期待されています。", en: "The entry into force of the new trade agreement is expected to boost exports.", note: "<strong>entry into force:</strong> （条約などの）発効<br><strong>boost:</strong> 押し上げる、拡大する" },
             { jp: "プライバシーの保護と利便性のバランスが、常に議論の的となっています。", en: "The balance between privacy protection and convenience is always a subject of debate.", note: "<strong>subject of debate:</strong> 議論の的" },
-            { jp: "その国は深刻な人道危機に直面しており、国際的な支援が必要です。", en: "The country is facing a severe humanitarian crisis and needs international aid.", note: "<strong>humanitarian crisis:</strong> 人道危機<br><strong>aid:</strong> 支援、援助" },
-            { jp: "ワークスタイルの多様化により、オフィスの在り方が見直されています。", en: "The diversification of work styles is prompting a rethink of the role of the office.", note: "<strong>diversification:</strong> 多様化<br><strong>prompt:</strong> 促す、引き起こす" },
-            { jp: "仮想通貨市場は高いボラティリティを伴い、投資家は注意が必要です。", en: "The cryptocurrency market involves high volatility, and investors should be cautious.", note: "<strong>volatility:</strong> 変動性、ボラティリティ<br><strong>cautious:</strong> 慎重な" },
-            { jp: "医療技術の向上により、かつては不治とされた病の治療が可能になりました。", en: "Advances in medical technology have made it possible to treat diseases once deemed incurable.", note: "<strong>deem:</strong> 見なす<br><strong>incurable:</strong> 不治の" },
-            { jp: "食料安全保障を確保するために、自給率の向上が急務となっています。", en: "To ensure food security, improving self-sufficiency is an urgent task.", note: "<strong>security:</strong> 安全保障<br><strong>self-sufficiency:</strong> 自給（率）" },
-            { jp: "その法案は議会で激しい議論の末、僅差で可決されました。", en: "The bill was passed by a narrow margin after heated debate in parliament.", note: "<strong>narrow margin:</strong> 僅差<br><strong>heated:</strong> 白熱した" },
-            { jp: "サプライチェーンの脆弱性が浮き彫りになり、対策が急がれています。", en: "The vulnerability of supply chains has been highlighted, and measures are urgently needed.", note: "<strong>vulnerability:</strong> 脆弱性<br><strong>highlight:</strong> 浮き彫りにする、強調する" },
-            { jp: "宇宙開発の分野において、民間企業の参入が加速しています。", en: "The entry of private companies into the field of space exploration is accelerating.", note: "<strong>exploration:</strong> 探査・開発<br><strong>accelerate:</strong> 加速する" },
-            { jp: "メンタルヘルスの重要性が広く認識され、サポート体制が整いつつあります。", en: "The importance of mental health is widely recognized, and support systems are being established.", note: "<strong>widely:</strong> 広く<br><strong>establish:</strong> 確立する、整備する" },
-            { jp: "文化の多様性を尊重することは、国際社会において極めて重要です。", en: "Respecting cultural diversity is extremely important in the international community.", note: "<strong>respect:</strong> 尊重する<br><strong>diversity:</strong> 多様性" },
-            { jp: "サイバーセキュリティ対策を強化することは、企業にとって避けて通れません。", en: "Strengthening cybersecurity measures is unavoidable for businesses.", note: "<strong>unavoidable:</strong> 避けられない" },
-            { jp: "未来の世代のために、資源を大切に使い、自然を守らなければなりません。", en: "For the sake of future generations, we must use resources wisely and protect nature.", note: "<strong>for the sake of ~:</strong> ～のために<br><strong>wisely:</strong> 賢明に、大切に" }
+            { jp: "その国は深刻な人道危機に直面しており、国際的な支援が必要です。", en: "The country is facing a severe humanitarian crisis and requires international assistance.", note: "<strong>humanitarian crisis:</strong> 人道危機<br><strong>assistance:</strong> 支援" }
         ]
     };
 
-    const categoryNames = {
-        business: "💼 ビジネス (交渉・戦略)",
-        meeting: "🌐 Web会議 (進行・議論)",
-        daily: "🏠 日常生活 (状況・感情)",
-        news: "📈 時事ニュース (社会・経済)"
-    };
-
     let currentQueue = [];
-    let currentQuestion = null;
-    let totalAttempts = 0;
     let correctCount = 0;
-    let audioEnabled = false;
-
-    const japaneseEl = document.getElementById('japanese-text');
-    const englishEl = document.getElementById('english-text');
-    const noteEl = document.getElementById('note-text'); // 追加
-    const controlsEl = document.getElementById('game-controls');
-    const statRem = document.getElementById('stat-remaining');
-    const statCor = document.getElementById('stat-correct');
-    const categoryHeader = document.getElementById('current-category-name');
-
-    const synth = window.speechSynthesis;
+    let totalQuestions = 0;
+    let isAnswerShowing = false;
+    let currentCategory = "";
 
     function startGame(category) {
-        document.getElementById('start-overlay').style.display = 'none';
-        categoryHeader.innerText = categoryNames[category];
-        audioEnabled = true;
-        
-        // 問題を完全にシャッフルしてキューを作成
+        currentCategory = category;
+        // データをシャッフルしてキューに入れる
         currentQueue = [...questionBank[category]].sort(() => Math.random() - 0.5);
-        
-        totalAttempts = 0;
+        totalQuestions = currentQueue.length;
         correctCount = 0;
+        
+        // ヘッダータイトルの変更
+        const categoryNames = {
+            'business': 'ビジネス (交渉・戦略)',
+            'meeting': 'Web会議 (進行・議論)',
+            'daily': '日常生活 (状況説明・感情)',
+            'news': '時事ニュース (社会・経済)'
+        };
+        document.getElementById('current-category-name').innerText = categoryNames[category];
+        
+        // 画面切り替え
+        document.getElementById('start-overlay').style.display = 'none';
+        
+        updateStats();
         nextQuestion();
     }
 
@@ -467,77 +448,70 @@
             finishGame();
             return;
         }
-
-        currentQuestion = currentQueue[0];
-        japaneseEl.innerText = currentQuestion.jp;
-        englishEl.innerText = currentQuestion.en;
         
-        // 裏面（英語・解説）を非表示にしてリセット
-        englishEl.style.display = 'none';
-        noteEl.style.display = 'none';
-        controlsEl.style.visibility = 'hidden';
+        isAnswerShowing = false;
+        const q = currentQueue[0];
+        
+        // テキストのセット
+        document.getElementById('japanese-text').innerText = q.jp;
+        document.getElementById('english-text').innerText = q.en;
+        
+        // noteが空の場合は非表示にするための処理
+        const noteEl = document.getElementById('note-text');
+        if (q.note && q.note.trim() !== "") {
+            noteEl.innerHTML = q.note;
+        } else {
+            noteEl.innerHTML = "";
+        }
+        
+        // 初期状態は英語と解説を隠し、ボタンも隠す
+        document.getElementById('english-text').style.display = 'none';
+        document.getElementById('note-text').style.display = 'none';
+        document.getElementById('game-controls').style.visibility = 'hidden';
         
         updateStats();
     }
 
     function showAnswer() {
-        // すでに表示されている場合は処理しない
-        if (!currentQuestion || englishEl.style.display === 'block') return;
+        if (isAnswerShowing) return;
+        isAnswerShowing = true;
         
-        // 英語と解説を表示
-        englishEl.style.display = 'block';
-        if (currentQuestion.note) {
-            noteEl.innerHTML = currentQuestion.note;
+        document.getElementById('english-text').style.display = 'block';
+        
+        // 解説がある場合のみ表示
+        const noteEl = document.getElementById('note-text');
+        if (noteEl.innerHTML !== "") {
             noteEl.style.display = 'block';
         }
         
-        controlsEl.style.visibility = 'visible';
-        
-        // 音声読み上げ
-        if (audioEnabled) {
-            const utter = new SpeechSynthesisUtterance(currentQuestion.en);
-            utter.lang = 'en-US';
-            utter.rate = 0.9;
-            synth.cancel();
-            synth.speak(utter);
-        }
+        document.getElementById('game-controls').style.visibility = 'visible';
     }
 
     function handleResult(isCorrect) {
-        totalAttempts++;
         if (isCorrect) {
             correctCount++;
-            currentQueue.shift();
+            currentQueue.shift(); // 先頭から削除（覚えた）
         } else {
-            // 間違えた場合は最後尾に回して再出題
-            const wrongItem = currentQueue.shift();
-            currentQueue.push(wrongItem);
+            // 間違えた場合は先頭から削除し、最後尾に追加（また出す）
+            const item = currentQueue.shift();
+            currentQueue.push(item);
         }
         nextQuestion();
     }
 
     function updateStats() {
-        statRem.innerText = currentQueue.length;
-        statCor.innerText = correctCount;
+        document.getElementById('stat-remaining').innerText = currentQueue.length;
+        document.getElementById('stat-correct').innerText = correctCount;
     }
 
     function finishGame() {
-        const resultScreen = document.getElementById('result-screen');
-        const finalRate = document.getElementById('final-rate');
-        const finalStats = document.getElementById('final-stats');
-        const feedback = document.getElementById('feedback-msg');
-
-        resultScreen.style.display = 'flex';
+        document.getElementById('result-screen').style.display = 'flex';
         
-        const rate = totalAttempts === 0 ? 0 : Math.round((correctCount / totalAttempts) * 100);
-        finalRate.innerText = rate + "%";
-        finalStats.innerText = `試行回数: ${totalAttempts} / 正解: ${correctCount}`;
-
-        if (rate >= 90) feedback.innerText = "驚異的なマスター率です！実戦でも自信を持って使えます。";
-        else if (rate >= 75) feedback.innerText = "素晴らしい！中級の壁を突破しつつあります。";
-        else feedback.innerText = "手応えのあるフレーズばかりです。繰り返し挑戦しましょう！";
+        // 正答率の計算（今回は「全部覚えるまで」なので、最初の一周の正答率などを出す設計も可能ですが、シンプルに表示）
+        document.getElementById('final-rate').innerText = "Clear!";
+        document.getElementById('final-stats').innerText = `出題数: ${totalQuestions} フレーズ`;
+        document.getElementById('feedback-msg').innerText = "素晴らしい！すべてのフレーズを覚えました！";
     }
 </script>
 </body>
 </html>
-

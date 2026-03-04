@@ -13,6 +13,7 @@
             --bg-color: #f0f2f5;
             --card-bg: #ffffff;
             --text-main: #2c3e50;
+            --note-color: #636e72;
         }
 
         * {
@@ -88,10 +89,11 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 30px;
+            padding: 25px;
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            overflow-y: auto; /* 長い解説が入った時用 */
         }
 
         .question-card:active {
@@ -113,6 +115,26 @@
             line-height: 1.4;
             display: none;
             word-wrap: break-word;
+        }
+
+        /* 解説用のスタイルを新規追加 */
+        #note-text {
+            display: none;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed #dfe6e9;
+            font-size: 0.9rem;
+            color: var(--note-color);
+            text-align: left;
+            width: 100%;
+            line-height: 1.5;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        #note-text strong {
+            color: #2d3436;
         }
 
         .controls {
@@ -216,6 +238,8 @@
         <div class="question-card" id="card" onclick="showAnswer()">
             <div id="japanese-text">読み込み中...</div>
             <div id="english-text"></div>
+            <!-- 解説表示用の要素を追加 -->
+            <div id="note-text"></div>
         </div>
 
         <div class="controls" id="game-controls" style="visibility: hidden;">
@@ -235,114 +259,115 @@
 </div>
 
 <script>
+    // データ群に語彙の解説(note)を追加
     const questionBank = {
         business: [
-            { jp: "お忙しいところ恐縮ですが、進捗を伺えますか？", en: "I'm sorry to bother you, but could you give me an update on the progress?" },
-            { jp: "その件につきましては、改めて検討させてください。", en: "Please let me take that under advisement and get back to you." },
-            { jp: "ご期待に沿えず、大変心苦しく思っております。", en: "We deeply regret that we were unable to meet your expectations." },
-            { jp: "早急にこの問題に対処する必要があります。", en: "We need to address this issue as a matter of urgency." },
-            { jp: "コスト削減と品質維持のバランスを取る必要があります。", en: "We need to strike a balance between cost reduction and maintaining quality." },
-            { jp: "この提案のメリットとデメリットを比較検討しましょう。", en: "Let's weigh the pros and cons of this proposal." },
-            { jp: "不測の事態に備えて、代替案を用意しておくべきです。", en: "We should have a contingency plan in case of unforeseen circumstances." },
-            { jp: "彼の提案は非常に説得力があり、検討に値します。", en: "His proposal is very compelling and worth considering." },
-            { jp: "市場の動向を注視し、戦略を柔軟に変更しましょう。", en: "Let's keep a close eye on market trends and pivot our strategy flexibly." },
-            { jp: "このプロジェクトの成功は、チーム全体の協力にかかっています。", en: "The success of this project hinges on the cooperation of the entire team." },
-            { jp: "期待以上の成果を上げるために、全力を尽くします。", en: "I will do my utmost to exceed your expectations." },
-            { jp: "御社のニーズに合わせて、サービスをカスタマイズ可能です。", en: "We can tailor our services to meet your specific needs." },
-            { jp: "現時点では、詳細を明らかにすることは控えさせていただきます。", en: "At this point, I would like to refrain from disclosing the details." },
-            { jp: "契約の条件について、いくつかの修正を提案させてください。", en: "Allow me to propose some amendments to the terms of the contract." },
-            { jp: "競合他社に差をつけるための独自の強みが必要です。", en: "We need a unique value proposition to differentiate ourselves from competitors." },
-            { jp: "予算の制約があるため、優先順位を決定しなければなりません。", en: "Due to budget constraints, we must determine our priorities." },
-            { jp: "プロジェクトの遅延を取り戻すために、リソースを追加投入します。", en: "We will allocate additional resources to make up for the project delay." },
-            { jp: "この件に関しては、私の裁量で決定させていただきます。", en: "I will make a decision on this matter at my discretion." },
-            { jp: "相互理解を深めるために、直接お話ししたいと考えています。", en: "I'd like to talk in person to foster a better mutual understanding." },
-            { jp: "まずは共通の目標を確認することから始めましょう。", en: "Let's start by establishing our common ground." },
-            { jp: "その価格設定は、現在の市場価値に見合っていないと感じます。", en: "I feel that the pricing is not commensurate with the current market value." },
-            { jp: "長期的な視点に立って、このパートナーシップを構築したいです。", en: "I want to build this partnership from a long-term perspective." },
-            { jp: "前向きにご検討いただければ幸いです。", en: "I would appreciate it if you could give this your favorable consideration." },
-            { jp: "結論を出す前に、リスク要因を徹底的に分析しましょう。", en: "Let's conduct a thorough analysis of the risk factors before reaching a conclusion." },
-            { jp: "本日は貴重なお時間をいただき、ありがとうございました。", en: "Thank you very much for taking the time to meet with us today." }
+            { jp: "お忙しいところ恐縮ですが、進捗を伺えますか？", en: "I'm sorry to bother you, but could you give me an update on the progress?", note: "<strong>bother:</strong> 邪魔をする、手を煩わせる<br><strong>give me an update on ~:</strong> ～の最新状況を教える" },
+            { jp: "その件につきましては、改めて検討させてください。", en: "Please let me take that under advisement and get back to you.", note: "<strong>take ~ under advisement:</strong> ～を慎重に検討する<br><strong>get back to you:</strong> 後ほど折り返し連絡する" },
+            { jp: "ご期待に沿えず、大変心苦しく思っております。", en: "We deeply regret that we were unable to meet your expectations.", note: "<strong>deeply regret:</strong> 深く後悔する、遺憾に思う<br><strong>meet one's expectations:</strong> 期待に応える" },
+            { jp: "早急にこの問題に対処する必要があります。", en: "We need to address this issue as a matter of urgency.", note: "<strong>address an issue:</strong> 問題に対処する<br><strong>as a matter of urgency:</strong> 喫緊の課題として、早急に" },
+            { jp: "コスト削減と品質維持のバランスを取る必要があります。", en: "We need to strike a balance between cost reduction and maintaining quality.", note: "<strong>strike a balance between A and B:</strong> AとBのバランスを取る" },
+            { jp: "この提案のメリットとデメリットを比較検討しましょう。", en: "Let's weigh the pros and cons of this proposal.", note: "<strong>weigh:</strong> （比較・検討のために）秤にかける<br><strong>pros and cons:</strong> 賛否、メリットとデメリット" },
+            { jp: "不測の事態に備えて、代替案を用意しておくべきです。", en: "We should have a contingency plan in case of unforeseen circumstances.", note: "<strong>contingency plan:</strong> 不測の事態に対する計画、代替案<br><strong>unforeseen:</strong> 予期せぬ" },
+            { jp: "彼の提案は非常に説得力があり、検討に値します。", en: "His proposal is very compelling and worth considering.", note: "<strong>compelling:</strong> 説得力のある、人を引きつける<br><strong>worth ~ing:</strong> ～する価値がある" },
+            { jp: "市場の動向を注視し、戦略を柔軟に変更しましょう。", en: "Let's keep a close eye on market trends and pivot our strategy flexibly.", note: "<strong>keep a close eye on:</strong> ～を注視する<br><strong>pivot:</strong> （軸足を残しつつ）方向転換する" },
+            { jp: "このプロジェクトの成功は、チーム全体の協力にかかっています。", en: "The success of this project hinges on the cooperation of the entire team.", note: "<strong>hinge on ~:</strong> ～にかかっている、～次第である（ドアの蝶番=hingeが語源）" },
+            { jp: "期待以上の成果を上げるために、全力を尽くします。", en: "I will do my utmost to exceed your expectations.", note: "<strong>do one's utmost:</strong> 全力を尽くす<br><strong>exceed:</strong> 上回る、超える" },
+            { jp: "御社のニーズに合わせて、サービスをカスタマイズ可能です。", en: "We can tailor our services to meet your specific needs.", note: "<strong>tailor:</strong> （服を仕立てるように）調整する、カスタマイズする" },
+            { jp: "現時点では、詳細を明らかにすることは控えさせていただきます。", en: "At this point, I would like to refrain from disclosing the details.", note: "<strong>refrain from ~ing:</strong> ～するのを控える<br><strong>disclose:</strong> 開示する、明らかにする" },
+            { jp: "契約の条件について、いくつかの修正を提案させてください。", en: "Allow me to propose some amendments to the terms of the contract.", note: "<strong>amendment:</strong> 修正、改正<br><strong>terms:</strong> （契約などの）条件" },
+            { jp: "競合他社に差をつけるための独自の強みが必要です。", en: "We need a unique value proposition to differentiate ourselves from competitors.", note: "<strong>value proposition:</strong> 価値提案（他社にはない独自の強み）<br><strong>differentiate:</strong> 差別化する" },
+            { jp: "予算の制約があるため、優先順位を決定しなければなりません。", en: "Due to budget constraints, we must determine our priorities.", note: "<strong>constraint:</strong> 制約、制限<br><strong>determine:</strong> 決定する" },
+            { jp: "プロジェクトの遅延を取り戻すために、リソースを追加投入します。", en: "We will allocate additional resources to make up for the project delay.", note: "<strong>allocate:</strong> 割り当てる、配分する<br><strong>make up for:</strong> ～を埋め合わせる、取り戻す" },
+            { jp: "この件に関しては、私の裁量で決定させていただきます。", en: "I will make a decision on this matter at my discretion.", note: "<strong>at one's discretion:</strong> ～の裁量で、独自の判断で" },
+            { jp: "相互理解を深めるために、直接お話ししたいと考えています。", en: "I'd like to talk in person to foster a better mutual understanding.", note: "<strong>in person:</strong> 直接会って<br><strong>foster:</strong> 育む、促進する" },
+            { jp: "まずは共通の目標を確認することから始めましょう。", en: "Let's start by establishing our common ground.", note: "<strong>establish:</strong> 確立する<br><strong>common ground:</strong> 共通の基盤、共通の立場・見解" },
+            { jp: "その価格設定は、現在の市場価値に見合っていないと感じます。", en: "I feel that the pricing is not commensurate with the current market value.", note: "<strong>pricing:</strong> 価格設定<br><strong>commensurate with ~:</strong> ～に相応した、見合った" },
+            { jp: "長期的な視点に立って、このパートナーシップを構築したいです。", en: "I want to build this partnership from a long-term perspective.", note: "<strong>from a long-term perspective:</strong> 長期的な視点から" },
+            { jp: "前向きにご検討いただければ幸いです。", en: "I would appreciate it if you could give this your favorable consideration.", note: "<strong>I would appreciate it if ~:</strong> ～していただけるとありがたい<br><strong>favorable:</strong> 好意的な、前向きな" },
+            { jp: "結論を出す前に、リスク要因を徹底的に分析しましょう。", en: "Let's conduct a thorough analysis of the risk factors before reaching a conclusion.", note: "<strong>conduct an analysis:</strong> 分析を行う<br><strong>thorough:</strong> 徹底的な" },
+            { jp: "本日は貴重なお時間をいただき、ありがとうございました。", en: "Thank you very much for taking the time to meet with us today.", note: "<strong>take the time to ~:</strong> わざわざ時間を割いて～する" }
         ],
         meeting: [
-            { jp: "画面が共有されているか確認いただけますか？", en: "Could you confirm if my screen is being shared correctly?" },
-            { jp: "恐れ入りますが、少しお声が遠いようです。", en: "I'm afraid your voice is a bit faint. Could you speak up?" },
-            { jp: "今の発言について、もう少し詳しく説明していただけますか？", en: "Could you elaborate on what you just said?" },
-            { jp: "時間が限られているので、次の議題に移りましょう。", en: "Since our time is limited, let's move on to the next item on the agenda." },
-            { jp: "本日の議論の要点をまとめさせていただきます。", en: "Let me summarize the key points of our discussion today." },
-            { jp: "今のところ、皆さんの意見は一致しているようですね。", en: "It seems that we are all on the same page for now." },
-            { jp: "これまでの話を整理するために、一度確認させてください。", en: "Let me double-check to make sure I've got everything straight so far." },
-            { jp: "電波の状況が悪く、先ほどの内容が聞き取れませんでした。", en: "The connection was poor, and I couldn't catch what you just said." },
-            { jp: "後ほど、議事録と関連資料をメールで送付いたします。", en: "I will send the meeting minutes and relevant documents via email later." },
-            { jp: "質問や懸念事項があれば、遠慮なくおっしゃってください。", en: "Please feel free to voice any questions or concerns you may have." },
-            { jp: "どなたか、この点について補足はありますか？", en: "Does anyone have anything to add regarding this point?" },
-            { jp: "このプロジェクトのタイムラインを再確認しましょう。", en: "Let's revisit the timeline for this project." },
-            { jp: "あなたの意見は理解できますが、別の視点も考慮すべきです。", en: "I see your point, but we should also consider another perspective." },
-            { jp: "具体的な数値データに基づいて議論を進めましょう。", en: "Let's proceed with the discussion based on specific numerical data." },
-            { jp: "一旦この議論を保留にして、次に進んでもよろしいでしょうか？", en: "Would you mind if we put this discussion on hold and move forward?" },
-            { jp: "次回の会議までに、各自の役割を明確にしておきましょう。", en: "Let's clarify our respective roles by the next meeting." },
-            { jp: "技術的なトラブルで開始が遅れたことをお詫びします。", en: "I apologize for the delay due to technical difficulties." },
-            { jp: "その質問については、担当部署に確認した上で回答いたします。", en: "I will get back to you on that question after consulting with the relevant department." },
-            { jp: "皆さんの建設的な意見に感謝いたします。", en: "I appreciate all of your constructive feedback." },
-            { jp: "今日は非常に有意義な議論ができたと思います。", en: "I believe we had a very productive discussion today." },
-            { jp: "発言される際は、マイクのミュートを解除してください。", en: "Please unmute your microphone when you wish to speak." },
-            { jp: "挙手機能を使って質問をしていただけますか？", en: "Could you use the 'raise hand' feature to ask a question?" },
-            { jp: "議論が本筋から逸れているようです。戻しましょう。", en: "It seems we're getting off track. Let's get back to the main point." },
-            { jp: "最終決定を下す前に、現場の意見を聞く必要があります。", en: "We need to hear from the frontline staff before making a final decision." },
-            { jp: "本日の会議はこれにて終了とさせていただきます。", en: "I'd like to wrap up today's meeting now." }
+            { jp: "画面が共有されているか確認いただけますか？", en: "Could you confirm if my screen is being shared correctly?", note: "<strong>is being shared:</strong> 共有されている（受動態の進行形）" },
+            { jp: "恐れ入りますが、少しお声が遠いようです。", en: "I'm afraid your voice is a bit faint. Could you speak up?", note: "<strong>faint:</strong> (音などが)かすかな、遠い<br><strong>speak up:</strong> 大きな声で話す" },
+            { jp: "今の発言について、もう少し詳しく説明していただけますか？", en: "Could you elaborate on what you just said?", note: "<strong>elaborate on ~:</strong> ～について詳しく説明する" },
+            { jp: "時間が限られているので、次の議題に移りましょう。", en: "Since our time is limited, let's move on to the next item on the agenda.", note: "<strong>move on to ~:</strong> ～に移る<br><strong>agenda:</strong> 議題、アジェンダ" },
+            { jp: "本日の議論の要点をまとめさせていただきます。", en: "Let me summarize the key points of our discussion today.", note: "<strong>summarize:</strong> 要約する<br><strong>key points:</strong> 要点" },
+            { jp: "今のところ、皆さんの意見は一致しているようですね。", en: "It seems that we are all on the same page for now.", note: "<strong>on the same page:</strong> 同じページを見ている＝認識が一致している" },
+            { jp: "これまでの話を整理するために、一度確認させてください。", en: "Let me double-check to make sure I've got everything straight so far.", note: "<strong>get everything straight:</strong> 状況などを整理する・正しく理解する" },
+            { jp: "電波の状況が悪く、先ほどの内容が聞き取れませんでした。", en: "The connection was poor, and I couldn't catch what you just said.", note: "<strong>connection:</strong> 通信状況、電波<br><strong>catch:</strong> （言葉などを）聞き取る" },
+            { jp: "後ほど、議事録と関連資料をメールで送付いたします。", en: "I will send the meeting minutes and relevant documents via email later.", note: "<strong>meeting minutes:</strong> 議事録<br><strong>relevant:</strong> 関連する" },
+            { jp: "質問や懸念事項があれば、遠慮なくおっしゃってください。", en: "Please feel free to voice any questions or concerns you may have.", note: "<strong>feel free to ~:</strong> 遠慮なく～する<br><strong>voice:</strong> (意見などを)言葉に表す" },
+            { jp: "どなたか、この点について補足はありますか？", en: "Does anyone have anything to add regarding this point?", note: "<strong>add:</strong> 付け加える<br><strong>regarding ~:</strong> ～に関して" },
+            { jp: "このプロジェクトのタイムラインを再確認しましょう。", en: "Let's revisit the timeline for this project.", note: "<strong>revisit:</strong> （一度議論したことを）再検討する、再び話し合う" },
+            { jp: "あなたの意見は理解できますが、別の視点も考慮すべきです。", en: "I see your point, but we should also consider another perspective.", note: "<strong>see your point:</strong> 言い分を理解する<br><strong>perspective:</strong> 視点" },
+            { jp: "具体的な数値データに基づいて議論を進めましょう。", en: "Let's proceed with the discussion based on specific numerical data.", note: "<strong>proceed with:</strong> ～を進める<br><strong>numerical:</strong> 数値の" },
+            { jp: "一旦この議論を保留にして、次に進んでもよろしいでしょうか？", en: "Would you mind if we put this discussion on hold and move forward?", note: "<strong>put ~ on hold:</strong> ～を保留にする<br><strong>move forward:</strong> 前に進む" },
+            { jp: "次回の会議までに、各自の役割を明確にしておきましょう。", en: "Let's clarify our respective roles by the next meeting.", note: "<strong>clarify:</strong> 明確にする<br><strong>respective:</strong> それぞれの" },
+            { jp: "技術的なトラブルで開始が遅れたことをお詫びします。", en: "I apologize for the delay due to technical difficulties.", note: "<strong>apologize for ~:</strong> ～を謝罪する<br><strong>technical difficulties:</strong> 技術的な問題" },
+            { jp: "その質問については、担当部署に確認した上で回答いたします。", en: "I will get back to you on that question after consulting with the relevant department.", note: "<strong>get back to you:</strong> （後で）返事をする<br><strong>consult with:</strong> ～に相談する" },
+            { jp: "皆さんの建設的な意見に感謝いたします。", en: "I appreciate all of your constructive feedback.", note: "<strong>constructive:</strong> 建設的な<br><strong>feedback:</strong> 意見、反応" },
+            { jp: "今日は非常に有意義な議論ができたと思います。", en: "I believe we had a very productive discussion today.", note: "<strong>productive:</strong> 生産的な、有意義な" },
+            { jp: "発言される際は、マイクのミュートを解除してください。", en: "Please unmute your microphone when you wish to speak.", note: "<strong>unmute:</strong> ミュートを解除する" },
+            { jp: "挙手機能を使って質問をしていただけますか？", en: "Could you use the 'raise hand' feature to ask a question?", note: "<strong>feature:</strong> 機能" },
+            { jp: "議論が本筋から逸れているようです。戻しましょう。", en: "It seems we're getting off track. Let's get back to the main point.", note: "<strong>get off track:</strong> 話が脱線する、本筋から逸れる" },
+            { jp: "最終決定を下す前に、現場の意見を聞く必要があります。", en: "We need to hear from the frontline staff before making a final decision.", note: "<strong>frontline:</strong> 現場の、最前線の" },
+            { jp: "本日の会議はこれにて終了とさせていただきます。", en: "I'd like to wrap up today's meeting now.", note: "<strong>wrap up:</strong> 締めくくる、終わりにする" }
         ],
         daily: [
-            { jp: "この路線のラッシュアワーは非常に混雑し、しばしば遅延が発生します。", en: "The rush hour on this line is extremely crowded, and delays occur frequently." },
-            { jp: "最近、仕事とプライベートの両立に苦労しています。", en: "I've been struggling to maintain a work-life balance lately." },
-            { jp: "彼の冗談はいつも少し皮肉が効いていて、好みが分かれます。", en: "His jokes are always a bit sarcastic, so they're not for everyone." },
-            { jp: "この小説の結末は、私の予想を完全に裏切るものでした。", en: "The ending of this novel completely defied my expectations." },
-            { jp: "環境への影響を考えて、プラスチックの使用を控えています。", en: "I'm cutting down on plastic use to reduce my environmental impact." },
-            { jp: "彼女のプレゼンテーションは、聴衆を惹きつける魅力がありました。", en: "Her presentation had the power to captivate the audience." },
-            { jp: "慣れない土地での生活は、最初は戸惑うことも多かったです。", en: "Living in an unfamiliar place was quite overwhelming at first." },
-            { jp: "健康維持のために、毎朝のジョギングを習慣にしています。", en: "I make it a rule to go jogging every morning to stay in shape." },
-            { jp: "そのニュースを聞いたとき、自分の耳を疑いました。", en: "I couldn't believe my ears when I heard the news." },
-            { jp: "週末は家でゆっくりして、溜まった疲れを癒したいです。", en: "I want to relax at home this weekend and recharge my batteries." },
-            { jp: "彼は非常に謙虚な人で、自分の功績をひけらかしません。", en: "He is a very humble person and doesn't boast about his achievements." },
-            { jp: "この街の雰囲気は、どことなく懐かしい感じがします。", en: "The atmosphere of this town feels somewhat nostalgic." },
-            { jp: "誤解を招くような表現を避けるように注意しています。", en: "I'm careful to avoid expressions that could lead to misunderstandings." },
-            { jp: "あいにく、その日はすでに予定が入っております。", en: "Unfortunately, I'm already tied up on that day." },
-            { jp: "期待していただけに、結果には少しがっかりしました。", en: "I was a bit disappointed with the result, especially since I had high hopes." },
-            { jp: "彼女は多才で、仕事だけでなく語学や楽器も堪能です。", en: "She is versatile and proficient in languages and music, as well as her work." },
-            { jp: "最近の物価高騰は、家計に大きな打撃を与えています。", en: "The recent surge in prices is dealing a heavy blow to household finances." },
-            { jp: "何事も経験だと思って、新しいことに挑戦し続けたいです。", en: "I want to keep trying new things, believing that everything is a learning experience." },
-            { jp: "彼は約束を必ず守る、非常に信頼できる人物です。", en: "He is a highly reliable person who always keeps his word." },
-            { jp: "言葉の壁を感じることもありますが、コミュニケーションを大切にしています。", en: "I sometimes feel a language barrier, but I value communication." },
-            { jp: "無理をせず、自分のペースで進めることが大切です。", en: "It's important not to overdo it and to proceed at your own pace." },
-            { jp: "予期せぬトラブルが発生しましたが、何とか解決できました。", en: "An unexpected problem arose, but we managed to resolve it somehow." },
-            { jp: "この映画は、現代社会の問題を鋭く風刺しています。", en: "This movie is a sharp satire on the problems of modern society." },
-            { jp: "彼女のアドバイスのおかげで、自信を取り戻すことができました。", en: "Thanks to her advice, I was able to regain my confidence." },
-            { jp: "人生には、時には立ち止まって考える時間も必要です。", en: "In life, sometimes you need time to stop and reflect." }
+            { jp: "この路線のラッシュアワーは非常に混雑し、しばしば遅延が発生します。", en: "The rush hour on this line is extremely crowded, and delays occur frequently.", note: "<strong>extremely:</strong> 極めて<br><strong>frequently:</strong> 頻繁に" },
+            { jp: "最近、仕事とプライベートの両立に苦労しています。", en: "I've been struggling to maintain a work-life balance lately.", note: "<strong>struggle to ~:</strong> ～するのに苦労する、もがく" },
+            { jp: "彼の冗談はいつも少し皮肉が効いていて、好みが分かれます。", en: "His jokes are always a bit sarcastic, so they're not for everyone.", note: "<strong>sarcastic:</strong> 皮肉な<br><strong>not for everyone:</strong> 万人受けするわけではない" },
+            { jp: "この小説の結末は、私の予想を完全に裏切るものでした。", en: "The ending of this novel completely defied my expectations.", note: "<strong>defy expectations:</strong> 予想を裏切る、期待に反する" },
+            { jp: "環境への影響を考えて、プラスチックの使用を控えています。", en: "I'm cutting down on plastic use to reduce my environmental impact.", note: "<strong>cut down on ~:</strong> ～を減らす、控える" },
+            { jp: "彼女のプレゼンテーションは、聴衆を惹きつける魅力がありました。", en: "Her presentation had the power to captivate the audience.", note: "<strong>captivate:</strong> 魅了する、心を奪う" },
+            { jp: "慣れない土地での生活は、最初は戸惑うことも多かったです。", en: "Living in an unfamiliar place was quite overwhelming at first.", note: "<strong>unfamiliar:</strong> 慣れない、よく知らない<br><strong>overwhelming:</strong> 圧倒されるような、戸惑う" },
+            { jp: "健康維持のために、毎朝のジョギングを習慣にしています。", en: "I make it a rule to go jogging every morning to stay in shape.", note: "<strong>make it a rule to ~:</strong> ～することにしている（習慣）<br><strong>stay in shape:</strong> 健康（体型）を保つ" },
+            { jp: "そのニュースを聞いたとき、自分の耳を疑いました。", en: "I couldn't believe my ears when I heard the news.", note: "<strong>not believe one's ears:</strong> 自分の耳を疑う" },
+            { jp: "週末は家でゆっくりして、溜まった疲れを癒したいです。", en: "I want to relax at home this weekend and recharge my batteries.", note: "<strong>recharge one's batteries:</strong> 休養してエネルギーを回復する" },
+            { jp: "彼は非常に謙虚な人で、自分の功績をひけらかしません。", en: "He is a very humble person and doesn't boast about his achievements.", note: "<strong>humble:</strong> 謙虚な<br><strong>boast about:</strong> ～を自慢する" },
+            { jp: "この街の雰囲気は、どことなく懐かしい感じがします。", en: "The atmosphere of this town feels somewhat nostalgic.", note: "<strong>atmosphere:</strong> 雰囲気<br><strong>nostalgic:</strong> 郷愁を誘う、懐かしい" },
+            { jp: "誤解を招くような表現を避けるように注意しています。", en: "I'm careful to avoid expressions that could lead to misunderstandings.", note: "<strong>lead to:</strong> ～につながる、～を招く" },
+            { jp: "あいにく、その日はすでに予定が入っております。", en: "Unfortunately, I'm already tied up on that day.", note: "<strong>be tied up:</strong> 忙しい、手が離せない（紐で縛られているイメージ）" },
+            { jp: "期待していただけに、結果には少しがっかりしました。", en: "I was a bit disappointed with the result, especially since I had high hopes.", note: "<strong>disappointed with:</strong> ～にがっかりした<br><strong>high hopes:</strong> 大きな期待" },
+            { jp: "彼女は多才で、仕事だけでなく語学や楽器も堪能です。", en: "She is versatile and proficient in languages and music, as well as her work.", note: "<strong>versatile:</strong> 多才な、用途の広い<br><strong>proficient in:</strong> ～に堪能な、熟達した" },
+            { jp: "最近の物価高騰は、家計に大きな打撃を与えています。", en: "The recent surge in prices is dealing a heavy blow to household finances.", note: "<strong>surge:</strong> 急騰<br><strong>deal a heavy blow to:</strong> ～に大きな打撃を与える" },
+            { jp: "何事も経験だと思って、新しいことに挑戦し続けたいです。", en: "I want to keep trying new things, believing that everything is a learning experience.", note: "<strong>learning experience:</strong> 学びの経験、教訓" },
+            { jp: "彼は約束を必ず守る、非常に信頼できる人物です。", en: "He is a highly reliable person who always keeps his word.", note: "<strong>reliable:</strong> 信頼できる<br><strong>keep one's word:</strong> 約束を守る" },
+            { jp: "言葉の壁を感じることもありますが、コミュニケーションを大切にしています。", en: "I sometimes feel a language barrier, but I value communication.", note: "<strong>barrier:</strong> 障壁<br><strong>value:</strong> 重んじる、大切にする" },
+            { jp: "無理をせず、自分のペースで進めることが大切です。", en: "It's important not to overdo it and to proceed at your own pace.", note: "<strong>overdo it:</strong> 無理をする、やりすぎる" },
+            { jp: "予期せぬトラブルが発生しましたが、何とか解決できました。", en: "An unexpected problem arose, but we managed to resolve it somehow.", note: "<strong>arise (arose):</strong> 発生する<br><strong>manage to ~:</strong> なんとか～する" },
+            { jp: "この映画は、現代社会の問題を鋭く風刺しています。", en: "This movie is a sharp satire on the problems of modern society.", note: "<strong>sharp:</strong> 鋭い<br><strong>satire:</strong> 風刺" },
+            { jp: "彼女のアドバイスのおかげで、自信を取り戻すことができました。", en: "Thanks to her advice, I was able to regain my confidence.", note: "<strong>regain:</strong> 取り戻す<br><strong>confidence:</strong> 自信" },
+            { jp: "人生には、時には立ち止まって考える時間も必要です。", en: "In life, sometimes you need time to stop and reflect.", note: "<strong>reflect:</strong> 熟考する、振り返る" }
         ],
         news: [
-            { jp: "社会の二極化は、民主主義の安定に対する重大な脅威となっています。", en: "The polarization of society has become a significant threat to the stability of democracy." },
-            { jp: "急速なAIの進歩は、雇用市場に大きな変化をもたらすと予想されます。", en: "Rapid advancements in AI are expected to bring about major changes in the job market." },
-            { jp: "政府は経済成長を促すために、大胆な規制緩和を実施しました。", en: "The government implemented bold deregulation to stimulate economic growth." },
-            { jp: "気候変動対策は、もはや待ったなしの状況にあります。", en: "Taking action against climate change is no longer something that can wait." },
-            { jp: "その多国籍企業は、不透明な取引を指摘され厳しい批判を浴びています。", en: "The multinational corporation is facing harsh criticism for its opaque transactions." },
-            { jp: "少子高齢化問題への対策は、国家の最優先課題の一つです。", en: "Countering the declining birthrate and aging population is one of the nation's top priorities." },
-            { jp: "デジタル格差の拡大が、教育や情報の不平等を生んでいます。", en: "The widening digital divide is creating inequality in education and information." },
-            { jp: "中央銀行はインフレを抑制するため、追加の利上げを検討しています。", en: "The central bank is considering further interest rate hikes to curb inflation." },
-            { jp: "再生可能エネルギーへの転換は、持続可能な社会のために不可欠です。", en: "The shift to renewable energy is essential for a sustainable society." },
-            { jp: "今回の不祥事により、その団体の信頼は失墜しました。", en: "This scandal has resulted in a loss of credibility for the organization." },
-            { jp: "情報の信憑性を見極めるためのメディアリテラシーが求められています。", en: "Media literacy is required to discern the credibility of information." },
-            { jp: "新しい貿易協定の発効により、輸出の拡大が期待されています。", en: "The entry into force of the new trade agreement is expected to boost exports." },
-            { jp: "プライバシーの保護と利便性のバランスが、常に議論の的となっています。", en: "The balance between privacy protection and convenience is always a subject of debate." },
-            { jp: "その国は深刻な人道危機に直面しており、国際的な支援が必要です。", en: "The country is facing a severe humanitarian crisis and needs international aid." },
-            { jp: "ワークスタイルの多様化により、オフィスの在り方が見直されています。", en: "The diversification of work styles is prompting a rethink of the role of the office." },
-            { jp: "仮想通貨市場は高いボラティリティを伴い、投資家は注意が必要です。", en: "The cryptocurrency market involves high volatility, and investors should be cautious." },
-            { jp: "医療技術の向上により、かつては不治とされた病の治療が可能になりました。", en: "Advances in medical technology have made it possible to treat diseases once deemed incurable." },
-            { jp: "食料安全保障を確保するために、自給率の向上が急務となっています。", en: "To ensure food security, improving self-sufficiency is an urgent task." },
-            { jp: "その法案は議会で激しい議論の末、僅差で可決されました。", en: "The bill was passed by a narrow margin after heated debate in parliament." },
-            { jp: "サプライチェーンの脆弱性が浮き彫りになり、対策が急がれています。", en: "The vulnerability of supply chains has been highlighted, and measures are urgently needed." },
-            { jp: "宇宙開発の分野において、民間企業の参入が加速しています。", en: "The entry of private companies into the field of space exploration is accelerating." },
-            { jp: "メンタルヘルスの重要性が広く認識され、サポート体制が整いつつあります。", en: "The importance of mental health is widely recognized, and support systems are being established." },
-            { jp: "文化の多様性を尊重することは、国際社会において極めて重要です。", en: "Respecting cultural diversity is extremely important in the international community." },
-            { jp: "サイバーセキュリティ対策を強化することは、企業にとって避けて通れません。", en: "Strengthening cybersecurity measures is unavoidable for businesses." },
-            { jp: "未来の世代のために、資源を大切に使い、自然を守らなければなりません。", en: "For the sake of future generations, we must use resources wisely and protect nature." }
+            { jp: "社会の二極化は、民主主義の安定に対する重大な脅威となっています。", en: "The polarization of society has become a significant threat to the stability of democracy.", note: "<strong>polarization:</strong> 二極化、分極化<br><strong>democracy:</strong> 民主主義" },
+            { jp: "急速なAIの進歩は、雇用市場に大きな変化をもたらすと予想されます。", en: "Rapid advancements in AI are expected to bring about major changes in the job market.", note: "<strong>advancement:</strong> 進歩<br><strong>bring about:</strong> 引き起こす、もたらす" },
+            { jp: "政府は経済成長を促すために、大胆な規制緩和を実施しました。", en: "The government implemented bold deregulation to stimulate economic growth.", note: "<strong>deregulation:</strong> 規制緩和<br><strong>stimulate:</strong> 刺激する、促す" },
+            { jp: "気候変動対策は、もはや待ったなしの状況にあります。", en: "Taking action against climate change is no longer something that can wait.", note: "<strong>no longer:</strong> もはや～ない" },
+            { jp: "その多国籍企業は、不透明な取引を指摘され厳しい批判を浴びています。", en: "The multinational corporation is facing harsh criticism for its opaque transactions.", note: "<strong>harsh:</strong> 厳しい<br><strong>opaque:</strong> 不透明な、分かりにくい" },
+            { jp: "少子高齢化問題への対策は、国家の最優先課題の一つです。", en: "Countering the declining birthrate and aging population is one of the nation's top priorities.", note: "<strong>declining birthrate:</strong> 少子化<br><strong>priority:</strong> 優先事項" },
+            { jp: "デジタル格差の拡大が、教育や情報の不平等を生んでいます。", en: "The widening digital divide is creating inequality in education and information.", note: "<strong>widen:</strong> 広がる<br><strong>inequality:</strong> 不平等" },
+            { jp: "中央銀行はインフレを抑制するため、追加の利上げを検討しています。", en: "The central bank is considering further interest rate hikes to curb inflation.", note: "<strong>interest rate hike:</strong> 利上げ<br><strong>curb:</strong> 抑制する" },
+            { jp: "再生可能エネルギーへの転換は、持続可能な社会のために不可欠です。", en: "The shift to renewable energy is essential for a sustainable society.", note: "<strong>renewable energy:</strong> 再生可能エネルギー<br><strong>essential:</strong> 不可欠な" },
+            { jp: "今回の不祥事により、その団体の信頼は失墜しました。", en: "This scandal has resulted in a loss of credibility for the organization.", note: "<strong>result in:</strong> ～という結果になる<br><strong>credibility:</strong> 信頼性" },
+            { jp: "情報の信憑性を見極めるためのメディアリテラシーが求められています。", en: "Media literacy is required to discern the credibility of information.", note: "<strong>literacy:</strong> (情報の)活用能力、リテラシー<br><strong>discern:</strong> 見分ける、識別する" },
+            { jp: "新しい貿易協定の発効により、輸出の拡大が期待されています。", en: "The entry into force of the new trade agreement is expected to boost exports.", note: "<strong>entry into force:</strong> （条約などの）発効<br><strong>boost:</strong> 押し上げる、拡大する" },
+            { jp: "プライバシーの保護と利便性のバランスが、常に議論の的となっています。", en: "The balance between privacy protection and convenience is always a subject of debate.", note: "<strong>subject of debate:</strong> 議論の的" },
+            { jp: "その国は深刻な人道危機に直面しており、国際的な支援が必要です。", en: "The country is facing a severe humanitarian crisis and needs international aid.", note: "<strong>humanitarian crisis:</strong> 人道危機<br><strong>aid:</strong> 支援、援助" },
+            { jp: "ワークスタイルの多様化により、オフィスの在り方が見直されています。", en: "The diversification of work styles is prompting a rethink of the role of the office.", note: "<strong>diversification:</strong> 多様化<br><strong>prompt:</strong> 促す、引き起こす" },
+            { jp: "仮想通貨市場は高いボラティリティを伴い、投資家は注意が必要です。", en: "The cryptocurrency market involves high volatility, and investors should be cautious.", note: "<strong>volatility:</strong> 変動性、ボラティリティ<br><strong>cautious:</strong> 慎重な" },
+            { jp: "医療技術の向上により、かつては不治とされた病の治療が可能になりました。", en: "Advances in medical technology have made it possible to treat diseases once deemed incurable.", note: "<strong>deem:</strong> 見なす<br><strong>incurable:</strong> 不治の" },
+            { jp: "食料安全保障を確保するために、自給率の向上が急務となっています。", en: "To ensure food security, improving self-sufficiency is an urgent task.", note: "<strong>security:</strong> 安全保障<br><strong>self-sufficiency:</strong> 自給（率）" },
+            { jp: "その法案は議会で激しい議論の末、僅差で可決されました。", en: "The bill was passed by a narrow margin after heated debate in parliament.", note: "<strong>narrow margin:</strong> 僅差<br><strong>heated:</strong> 白熱した" },
+            { jp: "サプライチェーンの脆弱性が浮き彫りになり、対策が急がれています。", en: "The vulnerability of supply chains has been highlighted, and measures are urgently needed.", note: "<strong>vulnerability:</strong> 脆弱性<br><strong>highlight:</strong> 浮き彫りにする、強調する" },
+            { jp: "宇宙開発の分野において、民間企業の参入が加速しています。", en: "The entry of private companies into the field of space exploration is accelerating.", note: "<strong>exploration:</strong> 探査・開発<br><strong>accelerate:</strong> 加速する" },
+            { jp: "メンタルヘルスの重要性が広く認識され、サポート体制が整いつつあります。", en: "The importance of mental health is widely recognized, and support systems are being established.", note: "<strong>widely:</strong> 広く<br><strong>establish:</strong> 確立する、整備する" },
+            { jp: "文化の多様性を尊重することは、国際社会において極めて重要です。", en: "Respecting cultural diversity is extremely important in the international community.", note: "<strong>respect:</strong> 尊重する<br><strong>diversity:</strong> 多様性" },
+            { jp: "サイバーセキュリティ対策を強化することは、企業にとって避けて通れません。", en: "Strengthening cybersecurity measures is unavoidable for businesses.", note: "<strong>unavoidable:</strong> 避けられない" },
+            { jp: "未来の世代のために、資源を大切に使い、自然を守らなければなりません。", en: "For the sake of future generations, we must use resources wisely and protect nature.", note: "<strong>for the sake of ~:</strong> ～のために<br><strong>wisely:</strong> 賢明に、大切に" }
         ]
     };
 
@@ -361,6 +386,7 @@
 
     const japaneseEl = document.getElementById('japanese-text');
     const englishEl = document.getElementById('english-text');
+    const noteEl = document.getElementById('note-text'); // 追加
     const controlsEl = document.getElementById('game-controls');
     const statRem = document.getElementById('stat-remaining');
     const statCor = document.getElementById('stat-correct');
@@ -390,18 +416,29 @@
         currentQuestion = currentQueue[0];
         japaneseEl.innerText = currentQuestion.jp;
         englishEl.innerText = currentQuestion.en;
+        
+        // 裏面（英語・解説）を非表示にしてリセット
         englishEl.style.display = 'none';
+        noteEl.style.display = 'none';
         controlsEl.style.visibility = 'hidden';
         
         updateStats();
     }
 
     function showAnswer() {
+        // すでに表示されている場合は処理しない
         if (!currentQuestion || englishEl.style.display === 'block') return;
         
+        // 英語と解説を表示
         englishEl.style.display = 'block';
+        if (currentQuestion.note) {
+            noteEl.innerHTML = currentQuestion.note;
+            noteEl.style.display = 'block';
+        }
+        
         controlsEl.style.visibility = 'visible';
         
+        // 音声読み上げ
         if (audioEnabled) {
             const utter = new SpeechSynthesisUtterance(currentQuestion.en);
             utter.lang = 'en-US';
